@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load cems_extras %}
+{% block title %}Students &bull; CEMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Page Header -->
+    {% include "components/page_header.html" with title="Students" subtitle="Directory of registered students, roll numbers, and academic departments." action_url="/admin/students/new/" action_text="Add student" %}
+
+    <!-- Filter Toolbar -->
+    <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+        <form method="GET" action="{% url 'student_list' %}" class="flex flex-col sm:flex-row items-center gap-3">
+            <div class="w-full sm:flex-1">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search by name, roll number, or email"
+                       class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] placeholder-[#718096] focus:outline-none focus:border-[#1F3A5F] focus:ring-1 focus:ring-[#1F3A5F] transition-colors duration-150">
+            </div>
+
+            <div class="w-full sm:w-64">
+                <select name="dept" onchange="this.form.submit()" class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] focus:outline-none focus:border-[#1F3A5F] focus:ring-1 focus:ring-[#1F3A5F] transition-colors duration-150 cursor-pointer">
+                    <option value="">All departments</option>
+                    {% for d in departments %}
+                        <option value="{{ d }}" {% if selected_dept == d %}selected{% endif %}>{{ d }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="flex items-center space-x-2 w-full sm:w-auto">
+                <button type="submit" class="h-10 px-4 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-sm font-semibold rounded-[4px] transition-colors duration-150">
+                    Filter
+                </button>
+                {% if query or selected_dept %}
+                    <a href="{% url 'student_list' %}" class="h-10 px-3 flex items-center text-sm text-[#718096] hover:text-[#1A202C]">
+                        Reset
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Students Table Card -->
+    <div class="bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+        {% if students %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm" role="table">
+                    <thead class="bg-[#F7F8FA] border-b border-[#E2E8F0] text-[13px] font-semibold text-[#4A5568] sticky top-0 z-10">
+                        <tr>
+                            <th scope="col" class="py-3 px-4">Student</th>
+                            <th scope="col" class="py-3 px-4">Roll number</th>
+                            <th scope="col" class="py-3 px-4">Department</th>
+                            <th scope="col" class="py-3 px-4">Email</th>
+                            <th scope="col" class="py-3 px-4 text-right">Active passes</th>
+                            <th scope="col" class="py-3 px-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#EDF2F7]">
+                        {% for st in students %}
+                        <tr class="hover:bg-[#F7F8FA] transition-colors duration-150">
+                            <td class="py-3.5 px-4">
+                                <div class="flex items-center space-x-2.5">
+                                    <span class="w-7 h-7 rounded-full bg-[#E0E7FF] text-[#1F3A5F] font-bold text-xs flex items-center justify-center flex-shrink-0 tabular-nums">
+                                        {{ st|initials }}
+                                    </span>
+                                    <div>
+                                        <div class="font-medium text-[#1A202C]">{{ st.full_name|default:st.username|title }}</div>
+                                        <div class="text-xs text-[#718096]">@{{ st.username }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-4 whitespace-nowrap tabular-nums text-[#1A202C] font-medium">
+                                {{ st.roll_no|default:"—" }}
+                            </td>
+                            <td class="py-3.5 px-4 text-[#4A5568]">
+                                {{ st.department|default:"—" }}
+                            </td>
+                            <td class="py-3.5 px-4 text-[#4A5568]">
+                                {{ st.email|default:"—" }}
+                            </td>
+                            <td class="py-3.5 px-4 text-right whitespace-nowrap tabular-nums text-[#4A5568]">
+                                {{ st.reg_count }}
+                            </td>
+                            <td class="py-3.5 px-4 text-right whitespace-nowrap space-x-3">
+                                <a href="{% url 'student_update' st.pk %}" class="text-xs font-semibold text-[#1F3A5F] hover:underline">
+                                    Edit
+                                </a>
+                                <form method="post" action="{% url 'student_delete' st.id %}" onsubmit="return confirm('Delete this student account?');" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-xs font-semibold text-[#9B1C1C] hover:underline bg-transparent border-0 p-0 cursor-pointer">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="px-4 py-3 border-t border-[#EDF2F7] bg-[#F7F8FA] text-xs text-[#718096] flex items-center justify-between">
+                <span>Showing {{ students|length }} student{{ students|length|pluralize }}</span>
+            </div>
+        {% else %}
+            {% include "components/empty_state.html" with title="No students found" message="No student records matched your search query." action_url="/admin/students/new/" action_text="Add student" icon="users" %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

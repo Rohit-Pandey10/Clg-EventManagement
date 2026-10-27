@@ -1,0 +1,45 @@
+<div class="mb-6">
+    {% if breadcrumbs %}
+        <nav class="mb-2 text-xs text-[#718096]" aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-1.5">
+                {% for b in breadcrumbs %}
+                    {% if b.url %}
+                        <li><a href="{{ b.url }}" class="hover:text-[#1F3A5F] hover:underline">{{ b.label }}</a></li>
+                        <li class="text-[#CBD5E0]">/</li>
+                    {% else %}
+                        <li class="text-[#1A202C] font-medium" aria-current="page">{{ b.label }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </nav>
+    {% endif %}
+
+    <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-4">
+        <div>
+            <h1 class="font-serif text-2xl font-semibold text-[#1A202C]">
+                {{ title }}
+            </h1>
+            {% if subtitle %}
+                <p class="text-sm text-[#718096] mt-1">
+                    {{ subtitle }}
+                </p>
+            {% endif %}
+        </div>
+
+        {% if action_url or secondary_url %}
+            <div class="flex items-center space-x-3 sm:self-center">
+                {% if secondary_url and secondary_text %}
+                    <a href="{{ secondary_url }}" class="inline-flex items-center justify-center h-[38px] px-4 text-sm font-semibold text-[#1F3A5F] bg-white border border-[#CBD5E0] hover:bg-[#F7F8FA] rounded-[4px] transition-colors duration-150">
+                        {{ secondary_text }}
+                    </a>
+                {% endif %}
+                {% if action_url and action_text %}
+                    <a href="{{ action_url }}" class="inline-flex items-center justify-center h-[38px] px-4 text-sm font-semibold text-white bg-[#1F3A5F] hover:bg-[#162B47] rounded-[4px] transition-colors duration-150">
+                        {{ action_text }}
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+

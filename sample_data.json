@@ -1,0 +1,308 @@
+[
+{
+  "model": "events.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$4vMIlNfXQ8sdR8MOX8fQQ8$IDOyGbObLpBW427oqJ7b+aNGqKXf0aLJNsmZPSeICj4=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "System",
+    "last_name": "Administrator",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-10-27T13:38:32.405Z",
+    "role": "admin",
+    "full_name": "System Administrator",
+    "roll_no": null,
+    "department": "Administration",
+    "email": "admin@college.edu",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "events.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$nCSsI4KgGa7jSteVMuO40H$wiL5g9Jfw0tc0WsVRptxY0kMi2448o8NGTdgiT62H94=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "alice",
+    "first_name": "Alice",
+    "last_name": "Sharma",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-10-27T13:38:32.588Z",
+    "role": "student",
+    "full_name": "Alice Sharma",
+    "roll_no": "CS2026-001",
+    "department": "Computer Engineering",
+    "email": "alice@college.edu",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "events.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$jPrnh5eCZq75ENRnxXL4AU$p0F17MpbyhnTlYHB0gI5ySqK4bepe7ezrm7vJNqcKOY=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "bob",
+    "first_name": "Bob",
+    "last_name": "Patel",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-10-27T13:38:32.830Z",
+    "role": "student",
+    "full_name": "Bob Patel",
+    "roll_no": "IT2026-014",
+    "department": "Information Technology",
+    "email": "bob@college.edu",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "events.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$kdXv2kuDlTaILsnB576YSg$aZibGa1iin32dsyqDvOeZEhGq0v1kAxCPEXk34cJ1NU=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "charlie",
+    "first_name": "Charlie",
+    "last_name": "Gupta",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-10-27T13:38:33.013Z",
+    "role": "student",
+    "full_name": "Charlie Gupta",
+    "roll_no": "AI2026-022",
+    "department": "Artificial Intelligence & Data Science",
+    "email": "charlie@college.edu",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "events.user",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$Z3dvT1j7XyhiUQqlbu46Av$N7x/bYqDwsoF8g4BF+WC90pm7pF9raEEeAcUTfNHaBQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "diana",
+    "first_name": "Diana",
+    "last_name": "Dsouza",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-10-27T13:38:33.196Z",
+    "role": "student",
+    "full_name": "Diana Dsouza",
+    "roll_no": "EXTC2026-035",
+    "department": "Electronics & Telecommunication",
+    "email": "diana@college.edu",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "events.event",
+  "pk": 1,
+  "fields": {
+    "title": "AI & Machine Learning 24h Hackathon",
+    "category": "Technical",
+    "event_date": "2026-11-06",
+    "venue": "Main Turing Auditorium & Lab 401",
+    "description": "24-hour flagship hackathon solving real-world challenges in GenAI, autonomous systems, and edge computing. Catering, Wi-Fi, and mentor support provided.",
+    "fee": "0.00",
+    "capacity": 60,
+    "created_by": 1,
+    "created_at": "2026-10-27T13:38:33.384Z",
+    "updated_at": "2026-10-27T13:38:33.384Z"
+  }
+},
+{
+  "model": "events.event",
+  "pk": 2,
+  "fields": {
+    "title": "Aura 2026: Annual Cultural Fiesta",
+    "category": "Cultural",
+    "event_date": "2026-11-14",
+    "venue": "Open Air Amphitheatre",
+    "description": "The campus's biggest cultural extravaganza featuring music battles, classical and modern dance competitions, theatrical plays, and star evening shows.",
+    "fee": "150.00",
+    "capacity": 150,
+    "created_by": 1,
+    "created_at": "2026-10-27T13:38:33.385Z",
+    "updated_at": "2026-10-27T13:38:33.385Z"
+  }
+},
+{
+  "model": "events.event",
+  "pk": 3,
+  "fields": {
+    "title": "Inter-College 7-a-Side Football Cup",
+    "category": "Sports",
+    "event_date": "2026-11-21",
+    "venue": "University Sports Complex Turf",
+    "description": "High-octane knockouts with teams from across state colleges. Official referees, live commentary, trophies, and cash prizes for champions.",
+    "fee": "50.00",
+    "capacity": 80,
+    "created_by": 1,
+    "created_at": "2026-10-27T13:38:33.386Z",
+    "updated_at": "2026-10-27T13:38:33.386Z"
+  }
+},
+{
+  "model": "events.event",
+  "pk": 4,
+  "fields": {
+    "title": "Cloud Native & DevOps Hands-on Bootcamp",
+    "category": "Workshop",
+    "event_date": "2026-11-10",
+    "venue": "Seminar Hall B & Hybrid Live Stream",
+    "description": "Deep-dive workshop on Docker containers, Kubernetes orchestrations, Terraform infrastructure-as-code, and GitHub Actions CI/CD pipelines.",
+    "fee": "99.00",
+    "capacity": 45,
+    "created_by": 1,
+    "created_at": "2026-10-27T13:38:33.387Z",
+    "updated_at": "2026-10-27T13:38:33.387Z"
+  }
+},
+{
+  "model": "events.event",
+  "pk": 5,
+  "fields": {
+    "title": "Big Tech Career & System Design Seminar",
+    "category": "Seminar",
+    "event_date": "2026-11-28",
+    "venue": "Executive Conference Hall 1",
+    "description": "Alumni keynote speakers from Google, Microsoft, and Uber discussing technical interviews, scalable system design, and open-source contributions.",
+    "fee": "0.00",
+    "capacity": 120,
+    "created_by": 1,
+    "created_at": "2026-10-27T13:38:33.388Z",
+    "updated_at": "2026-10-27T13:38:33.388Z"
+  }
+},
+{
+  "model": "events.event",
+  "pk": 6,
+  "fields": {
+    "title": "Autonomous Drone & Robotics Expo (Past Edition)",
+    "category": "Workshop",
+    "event_date": "2026-10-07",
+    "venue": "Robotics Lab & Indoor Field",
+    "description": "Hands-on flight controller programming and autonomous navigation demo. Successfully concluded with student showcase.",
+    "fee": "120.00",
+    "capacity": 40,
+    "created_by": 1,
+    "created_at": "2026-10-27T13:38:33.390Z",
+    "updated_at": "2026-10-27T13:38:33.390Z"
+  }
+},
+{
+  "model": "events.registration",
+  "pk": 1,
+  "fields": {
+    "user": 2,
+    "event": 1,
+    "registration_date": "2026-10-27T13:38:33.391Z",
+    "status": "registered"
+  }
+},
+{
+  "model": "events.registration",
+  "pk": 2,
+  "fields": {
+    "user": 2,
+    "event": 4,
+    "registration_date": "2026-10-27T13:38:33.392Z",
+    "status": "registered"
+  }
+},
+{
+  "model": "events.registration",
+  "pk": 3,
+  "fields": {
+    "user": 3,
+    "event": 1,
+    "registration_date": "2026-10-27T13:38:33.393Z",
+    "status": "registered"
+  }
+},
+{
+  "model": "events.registration",
+  "pk": 4,
+  "fields": {
+    "user": 3,
+    "event": 2,
+    "registration_date": "2026-10-27T13:38:33.393Z",
+    "status": "registered"
+  }
+},
+{
+  "model": "events.registration",
+  "pk": 5,
+  "fields": {
+    "user": 4,
+    "event": 1,
+    "registration_date": "2026-10-27T13:38:33.394Z",
+    "status": "registered"
+  }
+},
+{
+  "model": "events.registration",
+  "pk": 6,
+  "fields": {
+    "user": 4,
+    "event": 3,
+    "registration_date": "2026-10-27T13:38:33.395Z",
+    "status": "registered"
+  }
+},
+{
+  "model": "events.registration",
+  "pk": 7,
+  "fields": {
+    "user": 4,
+    "event": 4,
+    "registration_date": "2026-10-27T13:38:33.396Z",
+    "status": "cancelled"
+  }
+},
+{
+  "model": "events.registration",
+  "pk": 8,
+  "fields": {
+    "user": 5,
+    "event": 2,
+    "registration_date": "2026-10-27T13:38:33.396Z",
+    "status": "registered"
+  }
+},
+{
+  "model": "events.registration",
+  "pk": 9,
+  "fields": {
+    "user": 5,
+    "event": 5,
+    "registration_date": "2026-10-27T13:38:33.397Z",
+    "status": "registered"
+  }
+},
+{
+  "model": "events.registration",
+  "pk": 10,
+  "fields": {
+    "user": 2,
+    "event": 6,
+    "registration_date": "2026-10-27T13:38:33.398Z",
+    "status": "registered"
+  }
+}
+]

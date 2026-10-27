@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block title %}Register &bull; CEMS{% endblock %}
+
+{% block content %}
+<div class="py-6 flex items-center justify-center">
+    <div class="w-full max-w-[900px] bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden grid grid-cols-1 md:grid-cols-5 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+        <!-- Left Panel (2 cols) -->
+        <div class="md:col-span-2 bg-[#1F3A5F] text-white p-8 flex flex-col justify-between hidden md:flex">
+            <div>
+                <span class="text-xs font-semibold tracking-wider uppercase text-[#C7D2FE]">Student Access</span>
+                <h1 class="font-serif text-2xl font-bold mt-2 leading-snug">
+                    Join College Event Management
+                </h1>
+                <p class="text-sm text-[#C7D2FE] mt-2">
+                    Create your student profile with your official college roll number to participate.
+                </p>
+
+                <div class="mt-8 space-y-4 text-sm text-[#E2E8F0]">
+                    <div class="flex items-start space-x-2.5">
+                        <svg class="w-4 h-4 text-[#C7D2FE] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>Official records linked to your department and roll number.</span>
+                    </div>
+                    <div class="flex items-start space-x-2.5">
+                        <svg class="w-4 h-4 text-[#C7D2FE] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>Instant seat confirmation with digital registration tickets.</span>
+                    </div>
+                    <div class="flex items-start space-x-2.5">
+                        <svg class="w-4 h-4 text-[#C7D2FE] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>Flexible cancellations with seat reallocation.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-xs text-[#94A3B8] pt-6 border-t border-[#334E68]">
+                Already registered? <a href="{% url 'login' %}" class="text-[#C7D2FE] font-semibold hover:underline">Sign in</a>
+            </div>
+        </div>
+
+        <!-- Right Panel (3 cols) -->
+        <div class="md:col-span-3 p-6 sm:p-8">
+            <h2 class="font-serif text-2xl font-semibold text-[#1A202C] mb-1">
+                Student registration
+            </h2>
+            <p class="text-sm text-[#718096] mb-6">
+                Fill in your details below to create an account.
+            </p>
+
+            <form method="POST" action="{% url 'register' %}" class="space-y-4">
+                {% csrf_token %}
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                            Full name
+                        </label>
+                        {{ form.full_name }}
+                        {% if form.full_name.errors %}
+                            <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.full_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                            Username
+                        </label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.username.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                            Roll number
+                        </label>
+                        {{ form.roll_no }}
+                        {% if form.roll_no.errors %}
+                            <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.roll_no.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                            Department
+                        </label>
+                        {{ form.department }}
+                        {% if form.department.errors %}
+                            <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.department.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                        Email address
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.email.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                            Password
+                        </label>
+                        {{ form.password }}
+                        <p class="text-xs text-[#718096] mt-1">Must be at least 4 characters.</p>
+                        {% if form.password.errors %}
+                            <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.password.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                            Confirm password
+                        </label>
+                        {{ form.confirm_password }}
+                        {% if form.confirm_password.errors %}
+                            <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.confirm_password.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full h-10 px-4 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-sm font-semibold rounded-[4px] transition-colors duration-150">
+                        Create account
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6 pt-4 border-t border-[#E2E8F0] text-center text-sm text-[#4A5568]">
+                <span>Already registered?</span>
+                <a href="{% url 'login' %}" class="text-[#1F3A5F] font-semibold hover:underline ml-1">
+                    Sign in
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,112 @@
+/* Clean, Professional Design System for CEMS */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap');
+
+:root {
+  --font-serif: "Source Serif 4", Georgia, serif;
+  --font-sans: "Source Sans 3", "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+
+  --color-bg: #F7F8FA;
+  --color-surface: #FFFFFF;
+  --color-text: #1A202C;
+  --color-text-secondary: #4A5568;
+  --color-text-muted: #718096;
+  --color-border: #E2E8F0;
+  --color-border-input: #CBD5E0;
+  --color-primary: #1F3A5F;
+  --color-primary-hover: #162B47;
+
+  --color-success-bg: #E6F4EA;
+  --color-success-text: #276749;
+  --color-success-border: #C6F6D5;
+
+  --color-warning-bg: #FFF4DB;
+  --color-warning-text: #8A5A00;
+  --color-warning-border: #FEEBC8;
+
+  --color-danger-bg: #FDECEC;
+  --color-danger-text: #9B1C1C;
+  --color-danger-border: #FED7D7;
+
+  --color-neutral-bg: #EDF2F7;
+  --color-neutral-text: #4A5568;
+  --color-neutral-border: #E2E8F0;
+}
+
+::selection {
+  background-color: #C7D2FE;
+  color: #1F3A5F;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .font-serif {
+  font-family: var(--font-serif);
+  line-height: 1.25;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Category & Status Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  padding: 2px 8px;
+  border-radius: 4px;
+  height: 22px;
+}
+
+.badge-neutral {
+  background-color: var(--color-neutral-bg);
+  color: var(--color-neutral-text);
+  border: 1px solid var(--color-neutral-border);
+}
+
+.badge-success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+  border: 1px solid var(--color-success-border);
+}
+
+.badge-warning {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  border: 1px solid var(--color-warning-border);
+}
+
+.badge-danger {
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger-text);
+  border: 1px solid var(--color-danger-border);
+}
+
+/* Accessible visible focus states */
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Native Dialog Backdrop */
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

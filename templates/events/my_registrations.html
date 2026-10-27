@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load cems_extras %}
+{% block title %}My Registrations &bull; CEMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Page Header -->
+    {% include "components/page_header.html" with title="My Registrations" subtitle="Review your confirmed event passes and cancellation history." action_url="/student/browse/" action_text="Browse events" %}
+
+    <!-- Segmented Tabs (Active / Cancelled / All with counts) -->
+    <div class="flex items-center space-x-2 border-b border-[#E2E8F0] pb-2 text-sm">
+        <a href="?tab=active"
+           class="px-3 py-1.5 rounded-[4px] font-medium transition-colors duration-150 flex items-center space-x-2 {% if selected_tab == 'active' or not selected_tab %}bg-[#1F3A5F] text-white{% else %}text-[#4A5568] hover:bg-[#EDF2F7]{% endif %}">
+            <span>Active passes</span>
+            <span class="tabular-nums text-xs {% if selected_tab == 'active' or not selected_tab %}text-white/80{% else %}text-[#718096]{% endif %}">({{ active_count }})</span>
+        </a>
+        <a href="?tab=cancelled"
+           class="px-3 py-1.5 rounded-[4px] font-medium transition-colors duration-150 flex items-center space-x-2 {% if selected_tab == 'cancelled' %}bg-[#1F3A5F] text-white{% else %}text-[#4A5568] hover:bg-[#EDF2F7]{% endif %}">
+            <span>Cancelled</span>
+            <span class="tabular-nums text-xs {% if selected_tab == 'cancelled' %}text-white/80{% else %}text-[#718096]{% endif %}">({{ cancelled_count }})</span>
+        </a>
+        <a href="?tab=all"
+           class="px-3 py-1.5 rounded-[4px] font-medium transition-colors duration-150 flex items-center space-x-2 {% if selected_tab == 'all' %}bg-[#1F3A5F] text-white{% else %}text-[#4A5568] hover:bg-[#EDF2F7]{% endif %}">
+            <span>All history</span>
+            <span class="tabular-nums text-xs {% if selected_tab == 'all' %}text-white/80{% else %}text-[#718096]{% endif %}">({{ total_count }})</span>
+        </a>
+    </div>
+
+    <!-- Desktop Table View (>= 768px) -->
+    <div class="hidden md:block bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+        {% if registrations %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm" role="table">
+                    <thead class="bg-[#F7F8FA] border-b border-[#E2E8F0] text-[13px] font-semibold text-[#4A5568]">
+                        <tr>
+                            <th scope="col" class="py-3 px-4">Event title</th>
+                            <th scope="col" class="py-3 px-4">Date</th>
+                            <th scope="col" class="py-3 px-4">Venue</th>
+                            <th scope="col" class="py-3 px-4 text-right">Fee</th>
+                            <th scope="col" class="py-3 px-4">Registered on</th>
+                            <th scope="col" class="py-3 px-4">Status</th>
+                            <th scope="col" class="py-3 px-4 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#EDF2F7]">
+                        {% for reg in registrations %}
+                        <tr class="hover:bg-[#F7F8FA] transition-colors duration-150">
+                            <td class="py-3.5 px-4">
+                                <div class="font-medium text-[#1A202C]">{{ reg.event.title }}</div>
+                                <div class="flex items-center space-x-1.5 text-xs text-[#718096] mt-0.5">
+                                    <span class="w-1.5 h-1.5 rounded-full" style="background-color: {{ reg.event.category|category_dot_color }};" aria-hidden="true"></span>
+                                    <span>{{ reg.event.category }}</span>
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-4 tabular-nums text-[#4A5568] whitespace-nowrap">
+                                <div>{{ reg.event.event_date|short_date }}</div>
+                                <div class="text-xs text-[#718096]">{{ reg.event.event_date|relative_day }}</div>
+                            </td>
+                            <td class="py-3.5 px-4 text-[#4A5568]">
+                                {{ reg.event.venue }}
+                            </td>
+                            <td class="py-3.5 px-4 text-right tabular-nums text-[#4A5568] whitespace-nowrap">
+                                {{ reg.event.fee|inr }}
+                            </td>
+                            <td class="py-3.5 px-4 tabular-nums text-[#4A5568] whitespace-nowrap text-xs">
+                                {{ reg.registration_date|datetime_full }}
+                            </td>
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                {% include "components/status_badge.html" with status=reg.status %}
+                            </td>
+                            <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                                {% if reg.status == 'registered' %}
+                                    <form method="post" action="{% url 'cancel_registration' reg.id %}" onsubmit="return confirm('Cancel this registration?');" class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="h-[38px] px-3.5 text-xs font-semibold text-[#9B1C1C] bg-white border border-[#FED7D7] hover:bg-[#FDECEC] rounded-[4px] transition-colors duration-150">
+                                            Cancel registration
+                                        </button>
+                                    </form>
+                                {% elif not reg.event.is_past and reg.event.available_seats > 0 %}
+                                    <form method="post" action="{% url 'register_event' reg.event.id %}" onsubmit="return confirm('Reactivate this registration?');" class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="h-[38px] px-3.5 text-xs font-semibold text-white bg-[#1F3A5F] hover:bg-[#162B47] rounded-[4px] transition-colors duration-150">
+                                            Reactivate
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-xs text-[#718096]">Concluded</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            {% if selected_tab == 'cancelled' %}
+                {% include "components/empty_state.html" with title="No cancelled registrations" message="You have no cancelled event reservations." icon="ticket" %}
+            {% else %}
+                {% include "components/empty_state.html" with title="No active registrations" message="You haven't registered for any events yet." action_url="/student/browse/" action_text="Browse events" icon="ticket" %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- Mobile Stacked Cards View (< 768px) -->
+    <div class="md:hidden space-y-4">
+        {% if registrations %}
+            {% for reg in registrations %}
+            <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 space-y-3 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex items-center space-x-1.5 text-xs text-[#718096]">
+                        <span class="w-1.5 h-1.5 rounded-full" style="background-color: {{ reg.event.category|category_dot_color }};" aria-hidden="true"></span>
+                        <span>{{ reg.event.category }}</span>
+                    </div>
+                    {% include "components/status_badge.html" with status=reg.status %}
+                </div>
+
+                <h3 class="font-serif text-base font-semibold text-[#1A202C]">
+                    {{ reg.event.title }}
+                </h3>
+
+                <dl class="grid grid-cols-2 gap-2 text-xs text-[#4A5568] pt-2 border-t border-[#EDF2F7]">
+                    <div>
+                        <dt class="text-[#718096]">Date</dt>
+                        <dd class="font-medium text-[#1A202C] tabular-nums">{{ reg.event.event_date|short_date }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-[#718096]">Fee</dt>
+                        <dd class="font-medium text-[#1A202C] tabular-nums">{{ reg.event.fee|inr }}</dd>
+                    </div>
+                    <div class="col-span-2">
+                        <dt class="text-[#718096]">Venue</dt>
+                        <dd class="font-medium text-[#1A202C]">{{ reg.event.venue }}</dd>
+                    </div>
+                    <div class="col-span-2">
+                        <dt class="text-[#718096]">Registered on</dt>
+                        <dd class="text-[#718096] tabular-nums">{{ reg.registration_date|datetime_full }}</dd>
+                    </div>
+                </dl>
+
+                <div class="pt-3 border-t border-[#EDF2F7]">
+                    {% if reg.status == 'registered' %}
+                        <form method="post" action="{% url 'cancel_registration' reg.id %}" onsubmit="return confirm('Cancel this registration?');" class="w-full">
+                            {% csrf_token %}
+                            <button type="submit" class="w-full h-[38px] text-xs font-semibold text-[#9B1C1C] bg-white border border-[#FED7D7] hover:bg-[#FDECEC] rounded-[4px] transition-colors duration-150">
+                                Cancel registration
+                            </button>
+                        </form>
+                    {% elif not reg.event.is_past and reg.event.available_seats > 0 %}
+                        <form method="post" action="{% url 'register_event' reg.event.id %}" onsubmit="return confirm('Reactivate this registration?');" class="w-full">
+                            {% csrf_token %}
+                            <button type="submit" class="w-full h-[38px] text-xs font-semibold text-white bg-[#1F3A5F] hover:bg-[#162B47] rounded-[4px] transition-colors duration-150">
+                                Reactivate pass
+                            </button>
+                        </form>
+                    {% else %}
+                        <span class="text-xs text-[#718096]">Event concluded</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            {% if selected_tab == 'cancelled' %}
+                {% include "components/empty_state.html" with title="No cancelled registrations" message="You have no cancelled event reservations." icon="ticket" %}
+            {% else %}
+                {% include "components/empty_state.html" with title="No active registrations" message="You haven't registered for any events yet." action_url="/student/browse/" action_text="Browse events" icon="ticket" %}
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

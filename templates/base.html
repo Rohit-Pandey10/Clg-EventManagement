@@ -1,0 +1,220 @@
+{% load static cems_extras %}
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CEMS{% endblock %} &middot; College Event Management System</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%231F3A5F'/><text x='16' y='22' font-family='Georgia, serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>C</text></svg>">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1F3A5F',
+                        primaryHover: '#162B47',
+                        page: '#F7F8FA',
+                        surface: '#FFFFFF',
+                        textPrimary: '#1A202C',
+                        textSecondary: '#4A5568',
+                        textMuted: '#718096',
+                        borderColor: '#E2E8F0',
+                        borderInput: '#CBD5E0',
+                    },
+                    fontFamily: {
+                        serif: ['"Source Serif 4"', 'Georgia', 'serif'],
+                        sans: ['"Source Sans 3"', '"IBM Plex Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-full flex flex-col bg-[#F7F8FA] text-[#1A202C] font-sans antialiased">
+
+    <!-- Sticky Navigation Header -->
+    <header class="bg-white border-b border-[#E2E8F0] sticky top-0 z-40 transition-shadow duration-150">
+        <div class="max-w-[1200px] mx-auto px-6">
+            <div class="flex items-center justify-between h-14 sm:h-16">
+                <!-- Institution Wordmark (Serif, no icon tile) -->
+                <div class="flex items-center">
+                    <a href="{% url 'dashboard' %}" class="font-serif text-lg font-semibold text-[#1A202C] hover:text-[#1F3A5F] transition-colors duration-150">
+                        College Event Management System
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                {% if user.is_authenticated %}
+                <nav class="hidden md:flex items-center space-x-6 text-sm" aria-label="Main Navigation">
+                    {% if user.is_cems_admin %}
+                        <a href="{% url 'admin_dashboard' %}"
+                           class="flex items-center space-x-1.5 pb-1 transition-colors duration-150 {% if request.resolver_match.url_name == 'admin_dashboard' %}text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold{% else %}text-[#4A5568] hover:text-[#1A202C]{% endif %}"
+                           {% if request.resolver_match.url_name == 'admin_dashboard' %}aria-current="page"{% endif %}>
+                            <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"></path></svg>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="{% url 'event_list' %}"
+                           class="flex items-center space-x-1.5 pb-1 transition-colors duration-150 {% if request.resolver_match.url_name in 'event_list event_create event_update' %}text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold{% else %}text-[#4A5568] hover:text-[#1A202C]{% endif %}"
+                           {% if request.resolver_match.url_name in 'event_list event_create event_update' %}aria-current="page"{% endif %}>
+                            <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"></path></svg>
+                            <span>Events</span>
+                        </a>
+                        <a href="{% url 'student_list' %}"
+                           class="flex items-center space-x-1.5 pb-1 transition-colors duration-150 {% if request.resolver_match.url_name in 'student_list student_create student_update' %}text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold{% else %}text-[#4A5568] hover:text-[#1A202C]{% endif %}"
+                           {% if request.resolver_match.url_name in 'student_list student_create student_update' %}aria-current="page"{% endif %}>
+                            <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"></path></svg>
+                            <span>Students</span>
+                        </a>
+                        <a href="{% url 'registration_list' %}"
+                           class="flex items-center space-x-1.5 pb-1 transition-colors duration-150 {% if request.resolver_match.url_name == 'registration_list' %}text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold{% else %}text-[#4A5568] hover:text-[#1A202C]{% endif %}"
+                           {% if request.resolver_match.url_name == 'registration_list' %}aria-current="page"{% endif %}>
+                            <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"></path></svg>
+                            <span>Registrations</span>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'student_dashboard' %}"
+                           class="flex items-center space-x-1.5 pb-1 transition-colors duration-150 {% if request.resolver_match.url_name == 'student_dashboard' %}text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold{% else %}text-[#4A5568] hover:text-[#1A202C]{% endif %}"
+                           {% if request.resolver_match.url_name == 'student_dashboard' %}aria-current="page"{% endif %}>
+                            <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"></path></svg>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="{% url 'browse_events' %}"
+                           class="flex items-center space-x-1.5 pb-1 transition-colors duration-150 {% if request.resolver_match.url_name == 'browse_events' %}text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold{% else %}text-[#4A5568] hover:text-[#1A202C]{% endif %}"
+                           {% if request.resolver_match.url_name == 'browse_events' %}aria-current="page"{% endif %}>
+                            <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span>Browse Events</span>
+                        </a>
+                        <a href="{% url 'my_registrations' %}"
+                           class="flex items-center space-x-1.5 pb-1 transition-colors duration-150 {% if request.resolver_match.url_name == 'my_registrations' %}text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold{% else %}text-[#4A5568] hover:text-[#1A202C]{% endif %}"
+                           {% if request.resolver_match.url_name == 'my_registrations' %}aria-current="page"{% endif %}>
+                            <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z"></path></svg>
+                            <span>My Registrations</span>
+                        </a>
+                    {% endif %}
+                </nav>
+                {% endif %}
+
+                <!-- Right Actions: User Avatar Dropdown / Sign in -->
+                <div class="flex items-center space-x-3">
+                    {% if user.is_authenticated %}
+                        <!-- User Menu Dropdown Trigger (32px circle, flat navy tint) -->
+                        <div class="relative">
+                            <button id="user-menu-trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Open user menu"
+                                    class="flex items-center space-x-2 text-sm text-[#1A202C] hover:text-[#1F3A5F] p-1 rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#1F3A5F]">
+                                <span class="w-8 h-8 rounded-full bg-[#E0E7FF] text-[#1F3A5F] flex items-center justify-center font-bold text-xs tabular-nums flex-shrink-0" aria-hidden="true">
+                                    {{ user|initials }}
+                                </span>
+                                <span class="hidden sm:inline-block font-medium truncate max-w-[140px]">{{ user.full_name|default:user.username|title }}</span>
+                                <svg class="w-3.5 h-3.5 text-[#718096] hidden sm:inline" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path></svg>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <div id="user-menu-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white border border-[#E2E8F0] rounded-[6px] shadow-lg py-2 z-50 text-sm" role="menu">
+                                <div class="px-4 py-2 border-b border-[#EDF2F7]">
+                                    <div class="font-semibold text-[#1A202C]">{{ user.full_name|default:user.username|title }}</div>
+                                    <div class="text-xs text-[#718096] mt-0.5">
+                                        {% if user.is_cems_admin %}
+                                            Administrator &middot; {{ user.department|default:"Admin" }}
+                                        {% else %}
+                                            {% if user.roll_no %}Roll no. {{ user.roll_no }} &middot; {% endif %}{{ user.department|default:"Student" }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="py-1">
+                                    <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-[#9B1C1C] hover:bg-[#FDECEC] transition-colors" role="menuitem">
+                                        Sign out
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Hamburger Button (44px touch target) -->
+                        <button id="mobile-menu-btn" type="button" aria-label="Toggle navigation menu"
+                                class="md:hidden w-11 h-11 flex items-center justify-center text-[#4A5568] hover:text-[#1A202C] rounded-[4px] focus:outline-none focus:ring-2 focus:ring-[#1F3A5F]">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path></svg>
+                        </button>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="text-sm font-semibold text-[#1F3A5F] hover:underline px-2 py-1">
+                            Sign in
+                        </a>
+                        <a href="{% url 'register' %}" class="text-sm font-semibold text-white bg-[#1F3A5F] hover:bg-[#162B47] px-3.5 py-1.5 rounded-[4px] transition-colors duration-150">
+                            Register
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Drawer -->
+        {% if user.is_authenticated %}
+        <div id="mobile-menu" class="hidden md:hidden border-t border-[#E2E8F0] bg-white px-6 py-3 space-y-2 text-sm">
+            {% if user.is_cems_admin %}
+                <a href="{% url 'admin_dashboard' %}" class="block py-2 text-[#4A5568] hover:text-[#1F3A5F]">Dashboard</a>
+                <a href="{% url 'event_list' %}" class="block py-2 text-[#4A5568] hover:text-[#1F3A5F]">Events</a>
+                <a href="{% url 'student_list' %}" class="block py-2 text-[#4A5568] hover:text-[#1F3A5F]">Students</a>
+                <a href="{% url 'registration_list' %}" class="block py-2 text-[#4A5568] hover:text-[#1F3A5F]">Registrations</a>
+            {% else %}
+                <a href="{% url 'student_dashboard' %}" class="block py-2 text-[#4A5568] hover:text-[#1F3A5F]">Dashboard</a>
+                <a href="{% url 'browse_events' %}" class="block py-2 text-[#4A5568] hover:text-[#1F3A5F]">Browse Events</a>
+                <a href="{% url 'my_registrations' %}" class="block py-2 text-[#4A5568] hover:text-[#1F3A5F]">My Registrations</a>
+            {% endif %}
+            <div class="pt-2 border-t border-[#EDF2F7] flex items-center justify-between text-xs text-[#718096]">
+                <span>{{ user.full_name|default:user.username|title }}</span>
+                <a href="{% url 'logout' %}" class="text-[#9B1C1C] font-semibold">Sign out</a>
+            </div>
+        </div>
+        {% endif %}
+    </header>
+
+    <!-- Operational Alert Messages Region (aria-live="polite") -->
+    <div class="max-w-[1200px] w-full mx-auto px-6 pt-4" aria-live="polite">
+        {% if messages %}
+            <div class="space-y-2">
+                {% for message in messages %}
+                    <div class="cems-alert flex items-start justify-between p-3 rounded-[4px] border text-sm
+                        {% if 'success' in message.tags or 'green' in message.tags %}
+                            bg-[#E6F4EA] border-[#C6F6D5] text-[#276749]
+                        {% elif 'error' in message.tags or 'danger' in message.tags or 'rose' in message.tags %}
+                            bg-[#FDECEC] border-[#FED7D7] text-[#9B1C1C]
+                        {% elif 'warning' in message.tags or 'amber' in message.tags %}
+                            bg-[#FFF4DB] border-[#FEEBC8] text-[#8A5A00]
+                        {% else %}
+                            bg-[#EDF2F7] border-[#E2E8F0] text-[#4A5568]
+                        {% endif %}" role="status">
+                        <div class="pr-2 leading-relaxed">
+                            {{ message }}
+                        </div>
+                        <button type="button" class="alert-close text-current hover:opacity-75 ml-3 text-lg leading-none font-bold" aria-label="Dismiss message">
+                            &times;
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-[1200px] w-full mx-auto px-6 py-5">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Slim Institutional Footer -->
+    <footer class="mt-auto border-t border-[#E2E8F0] bg-white">
+        <div class="max-w-[1200px] mx-auto px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between text-xs text-[#718096]">
+            <div>College Event Management System &middot; Academic Year 2026</div>
+            <div class="mt-1 sm:mt-0">Python &amp; Django Laboratory Project</div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

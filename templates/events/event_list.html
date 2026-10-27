@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% load cems_extras %}
+{% block title %}Events &bull; CEMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Page Header -->
+    {% include "components/page_header.html" with title="Events" subtitle="Manage and schedule institutional campus events." action_url="/admin/events/new/" action_text="Create event" %}
+
+    <!-- Filter Toolbar -->
+    <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+        <form method="GET" action="{% url 'event_list' %}" class="flex flex-col sm:flex-row items-center gap-3">
+            <div class="w-full sm:flex-1 relative">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search by title, venue, or details"
+                       class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] placeholder-[#718096] focus:outline-none focus:border-[#1F3A5F] focus:ring-1 focus:ring-[#1F3A5F] transition-colors duration-150">
+            </div>
+
+            <div class="w-full sm:w-56">
+                <select name="category" onchange="this.form.submit()" class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] focus:outline-none focus:border-[#1F3A5F] focus:ring-1 focus:ring-[#1F3A5F] transition-colors duration-150 cursor-pointer">
+                    <option value="">All categories</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="flex items-center space-x-2 w-full sm:w-auto">
+                <button type="submit" class="h-10 px-4 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-sm font-semibold rounded-[4px] transition-colors duration-150">
+                    Filter
+                </button>
+                {% if query or selected_category %}
+                    <a href="{% url 'event_list' %}" class="h-10 px-3 flex items-center text-sm text-[#718096] hover:text-[#1A202C]">
+                        Reset
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Events Table Card -->
+    <div class="bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+        {% if events %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm" role="table">
+                    <thead class="bg-[#F7F8FA] border-b border-[#E2E8F0] text-[13px] font-semibold text-[#4A5568] sticky top-0 z-10">
+                        <tr>
+                            <th scope="col" class="py-3 px-4">Event title</th>
+                            <th scope="col" class="py-3 px-4">Category</th>
+                            <th scope="col" class="py-3 px-4">Date</th>
+                            <th scope="col" class="py-3 px-4">Venue</th>
+                            <th scope="col" class="py-3 px-4 text-right">Fee</th>
+                            <th scope="col" class="py-3 px-4 text-right">Occupancy</th>
+                            <th scope="col" class="py-3 px-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#EDF2F7]">
+                        {% for event in events %}
+                        <tr class="hover:bg-[#F7F8FA] transition-colors duration-150">
+                            <td class="py-3.5 px-4 max-w-xs">
+                                <div class="font-medium text-[#1A202C]">{{ event.title }}</div>
+                                {% if event.description %}
+                                    <div class="text-xs text-[#718096] mt-0.5 line-clamp-2" title="{{ event.description }}">{{ event.description }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                <div class="flex items-center space-x-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full" style="background-color: {{ event.category|category_dot_color }};" aria-hidden="true"></span>
+                                    <span class="text-xs text-[#4A5568]">{{ event.category }}</span>
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-4 whitespace-nowrap tabular-nums text-[#4A5568]">
+                                <div>{{ event.event_date|short_date }}</div>
+                                <div class="text-xs text-[#718096]">{{ event.event_date|relative_day }}</div>
+                            </td>
+                            <td class="py-3.5 px-4 text-[#4A5568]">
+                                {{ event.venue }}
+                            </td>
+                            <td class="py-3.5 px-4 text-right whitespace-nowrap tabular-nums text-[#4A5568]">
+                                {{ event.fee|inr }}
+                            </td>
+                            <td class="py-3.5 px-4 text-right whitespace-nowrap tabular-nums text-[#4A5568]">
+                                <div>{{ event.active_registrations_count }} / {{ event.capacity }}</div>
+                                <div class="text-xs text-[#718096]">{{ event.available_seats }} left</div>
+                            </td>
+                            <td class="py-3.5 px-4 text-right whitespace-nowrap space-x-3">
+                                <a href="{% url 'event_update' event.pk %}" class="text-xs font-semibold text-[#1F3A5F] hover:underline">
+                                    Edit
+                                </a>
+                                <form method="post" action="{% url 'event_delete' event.id %}" onsubmit="return confirm('Delete this event?');" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-xs font-semibold text-[#9B1C1C] hover:underline bg-transparent border-0 p-0 cursor-pointer">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="px-4 py-3 border-t border-[#EDF2F7] bg-[#F7F8FA] text-xs text-[#718096] flex items-center justify-between">
+                <span>Showing {{ events|length }} event{{ events|length|pluralize }}</span>
+            </div>
+        {% else %}
+            {% include "components/empty_state.html" with title="No events found" message="No events matched your search keywords or category filter." action_url="/admin/events/new/" action_text="Create event" %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

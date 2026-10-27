@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} &bull; CEMS{% endblock %}
+
+{% block content %}
+<div class="max-w-[700px] mx-auto py-2">
+    <!-- Breadcrumb & Header -->
+    <nav class="mb-2 text-xs text-[#718096]" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-1.5">
+            <li><a href="{% url 'event_list' %}" class="hover:text-[#1F3A5F] hover:underline">Events</a></li>
+            <li class="text-[#CBD5E0]">/</li>
+            <li class="text-[#1A202C] font-medium" aria-current="page">{{ title }}</li>
+        </ol>
+    </nav>
+
+    <div class="mb-6">
+        <h1 class="font-serif text-2xl font-semibold text-[#1A202C]">
+            {{ title }}
+        </h1>
+        <p class="text-sm text-[#718096] mt-0.5">
+            Configure event parameters, scheduling, admission fee, and attendee limits.
+        </p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-6 sm:p-8 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                    Event title
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.title.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                        Category
+                    </label>
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                        <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.category.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                        Event date
+                    </label>
+                    {{ form.event_date }}
+                    {% if form.event_date.errors %}
+                        <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.event_date.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                    Venue
+                </label>
+                {{ form.venue }}
+                {% if form.venue.errors %}
+                    <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.venue.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                        Registration fee (₹)
+                    </label>
+                    {{ form.fee }}
+                    <div class="text-xs text-[#718096] mt-1">Enter 0.00 for free admission.</div>
+                    {% if form.fee.errors %}
+                        <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.fee.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                        Capacity limit (seats)
+                    </label>
+                    {{ form.capacity }}
+                    {% if is_edit %}
+                        <div class="text-xs text-[#718096] mt-1 tabular-nums">Current active registrations: {{ event.active_registrations_count }}</div>
+                    {% endif %}
+                    {% if form.capacity.errors %}
+                        <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.capacity.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                    Description
+                </label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.description.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="pt-4 border-t border-[#E2E8F0] flex items-center justify-end space-x-3">
+                <a href="{% url 'event_list' %}" class="h-[38px] px-4 flex items-center text-sm font-semibold text-[#1F3A5F] bg-white border border-[#CBD5E0] hover:bg-[#F7F8FA] rounded-[4px] transition-colors duration-150">
+                    Cancel
+                </a>
+                <button type="submit" class="h-[38px] px-4 text-sm font-semibold text-white bg-[#1F3A5F] hover:bg-[#162B47] rounded-[4px] transition-colors duration-150">
+                    {% if is_edit %}Save changes{% else %}Create event{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

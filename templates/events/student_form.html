@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} &bull; CEMS{% endblock %}
+
+{% block content %}
+<div class="max-w-[600px] mx-auto py-2">
+    <!-- Breadcrumb & Header -->
+    <nav class="mb-2 text-xs text-[#718096]" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-1.5">
+            <li><a href="{% url 'student_list' %}" class="hover:text-[#1F3A5F] hover:underline">Students</a></li>
+            <li class="text-[#CBD5E0]">/</li>
+            <li class="text-[#1A202C] font-medium" aria-current="page">{{ title }}</li>
+        </ol>
+    </nav>
+
+    <div class="mb-6">
+        <h1 class="font-serif text-2xl font-semibold text-[#1A202C]">
+            {{ title }}
+        </h1>
+        <p class="text-sm text-[#718096] mt-0.5">
+            Configure student identification, department assignment, and account credentials.
+        </p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-6 sm:p-8 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                        Full name
+                    </label>
+                    {{ form.full_name }}
+                    {% if form.full_name.errors %}
+                        <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.full_name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                {% if not is_edit %}
+                <div>
+                    <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                        Username
+                    </label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.username.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div>
+                    <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                        Username
+                    </label>
+                    <input type="text" value="{{ student.username }}" disabled
+                           class="w-full h-10 px-3 text-sm bg-[#F7F8FA] border border-[#CBD5E0] rounded-[4px] text-[#718096] cursor-not-allowed">
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                        Roll number
+                    </label>
+                    {{ form.roll_no }}
+                    {% if form.roll_no.errors %}
+                        <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.roll_no.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                        Department
+                    </label>
+                    {{ form.department }}
+                    {% if form.department.errors %}
+                        <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.department.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                    Email address
+                </label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-[#1A202C] mb-1">
+                    {% if is_edit %}Password (leave blank to keep current){% else %}Password{% endif %}
+                </label>
+                {% if is_edit %}
+                    {{ form.new_password }}
+                    {% if form.new_password.errors %}
+                        <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.new_password.errors.0 }}</p>
+                    {% endif %}
+                {% else %}
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <p class="text-[13px] text-[#9B1C1C] mt-1">{{ form.password.errors.0 }}</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <div class="pt-4 border-t border-[#E2E8F0] flex items-center justify-end space-x-3">
+                <a href="{% url 'student_list' %}" class="h-[38px] px-4 flex items-center text-sm font-semibold text-[#1F3A5F] bg-white border border-[#CBD5E0] hover:bg-[#F7F8FA] rounded-[4px] transition-colors duration-150">
+                    Cancel
+                </a>
+                <button type="submit" class="h-[38px] px-4 text-sm font-semibold text-white bg-[#1F3A5F] hover:bg-[#162B47] rounded-[4px] transition-colors duration-150">
+                    {% if is_edit %}Save changes{% else %}Create account{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

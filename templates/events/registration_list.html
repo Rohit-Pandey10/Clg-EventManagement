@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load cems_extras %}
+{% block title %}Registrations &bull; CEMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Page Header -->
+    {% include "components/page_header.html" with title="Registrations" subtitle="Audit student event reservations and track attendance statuses." %}
+
+    <!-- Filter Toolbar -->
+    <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+        <form method="GET" action="{% url 'registration_list' %}" class="flex flex-col sm:flex-row items-center gap-3">
+            <div class="w-full sm:flex-1">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search by student, roll number, or event"
+                       class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] placeholder-[#718096] focus:outline-none focus:border-[#1F3A5F] focus:ring-1 focus:ring-[#1F3A5F] transition-colors duration-150">
+            </div>
+
+            <div class="w-full sm:w-60">
+                <select name="event" onchange="this.form.submit()" class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] focus:outline-none focus:border-[#1F3A5F] focus:ring-1 focus:ring-[#1F3A5F] transition-colors duration-150 cursor-pointer">
+                    <option value="">All events</option>
+                    {% for ev in all_events %}
+                        <option value="{{ ev.id }}" {% if selected_event == ev.id|stringformat:"s" %}selected{% endif %}>{{ ev.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="w-full sm:w-44">
+                <select name="status" onchange="this.form.submit()" class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] focus:outline-none focus:border-[#1F3A5F] focus:ring-1 focus:ring-[#1F3A5F] transition-colors duration-150 cursor-pointer">
+                    <option value="">All statuses</option>
+                    <option value="registered" {% if selected_status == "registered" %}selected{% endif %}>Registered</option>
+                    <option value="cancelled" {% if selected_status == "cancelled" %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+
+            <div class="flex items-center space-x-2 w-full sm:w-auto">
+                <button type="submit" class="h-10 px-4 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-sm font-semibold rounded-[4px] transition-colors duration-150">
+                    Filter
+                </button>
+                {% if query or selected_event or selected_status %}
+                    <a href="{% url 'registration_list' %}" class="h-10 px-3 flex items-center text-sm text-[#718096] hover:text-[#1A202C]">
+                        Reset
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Registrations Table -->
+    <div class="bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+        {% if registrations %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm" role="table">
+                    <thead class="bg-[#F7F8FA] border-b border-[#E2E8F0] text-[13px] font-semibold text-[#4A5568] sticky top-0 z-10">
+                        <tr>
+                            <th scope="col" class="py-3 px-4">Student</th>
+                            <th scope="col" class="py-3 px-4">Roll number</th>
+                            <th scope="col" class="py-3 px-4">Event</th>
+                            <th scope="col" class="py-3 px-4">Event date</th>
+                            <th scope="col" class="py-3 px-4">Registered date</th>
+                            <th scope="col" class="py-3 px-4">Status</th>
+                            <th scope="col" class="py-3 px-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#EDF2F7]">
+                        {% for reg in registrations %}
+                        <tr class="hover:bg-[#F7F8FA] transition-colors duration-150">
+                            <td class="py-3.5 px-4">
+                                <div class="font-medium text-[#1A202C]">{{ reg.user.full_name|default:reg.user.username|title }}</div>
+                                <div class="text-xs text-[#718096]">{{ reg.user.department|default:"—" }}</div>
+                            </td>
+                            <td class="py-3.5 px-4 whitespace-nowrap tabular-nums text-[#1A202C]">
+                                {{ reg.user.roll_no|default:"—" }}
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <div class="font-medium text-[#1A202C]">{{ reg.event.title }}</div>
+                                <div class="text-xs text-[#718096]">{{ reg.event.venue }}</div>
+                            </td>
+                            <td class="py-3.5 px-4 whitespace-nowrap tabular-nums text-[#4A5568]">
+                                {{ reg.event.event_date|short_date }}
+                            </td>
+                            <td class="py-3.5 px-4 whitespace-nowrap tabular-nums text-[#4A5568]">
+                                {{ reg.registration_date|datetime_full }}
+                            </td>
+                            <td class="py-3.5 px-4 whitespace-nowrap">
+                                {% include "components/status_badge.html" with status=reg.status %}
+                            </td>
+                            <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                                {% if reg.status == 'registered' %}
+                                    <form method="post" action="{% url 'cancel_registration' reg.id %}" onsubmit="return confirm('Cancel this registration?');" class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-xs font-semibold text-[#9B1C1C] hover:underline bg-transparent border-0 p-0 cursor-pointer">
+                                            Cancel
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-xs text-[#718096]">None</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="px-4 py-3 border-t border-[#EDF2F7] bg-[#F7F8FA] text-xs text-[#718096] flex items-center justify-between">
+                <span>Showing {{ registrations|length }} registration{{ registrations|length|pluralize }}</span>
+            </div>
+        {% else %}
+            {% include "components/empty_state.html" with title="No registrations found" message="No registration records matched your filter criteria." icon="ticket" %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

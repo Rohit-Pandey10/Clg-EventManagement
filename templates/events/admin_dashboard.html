@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% load cems_extras %}
+{% block title %}Dashboard &bull; CEMS{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Page Header (Asserted in tests: "Dashboard Overview") -->
+    {% include "components/page_header.html" with title="Dashboard Overview" subtitle="Operational metrics, event scheduling, and registration summary." action_url="/admin/events/new/" action_text="Create event" secondary_url="/admin/students/new/" secondary_text="Add student" %}
+
+    <!-- Stat Strip (4 cards with helper lines) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+            <div class="text-[13px] font-medium text-[#718096]">Total events</div>
+            <div class="text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">{{ total_events }}</div>
+            <div class="text-xs text-[#718096] mt-1 flex items-center">
+                <span>All time created</span>
+            </div>
+        </div>
+
+        <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+            <div class="text-[13px] font-medium text-[#718096]">Students</div>
+            <div class="text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">{{ total_students }}</div>
+            <div class="text-xs text-[#718096] mt-1 flex items-center">
+                <span>Registered student accounts</span>
+            </div>
+        </div>
+
+        <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+            <div class="text-[13px] font-medium text-[#718096]">Active registrations</div>
+            <div class="text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">{{ active_registrations }}</div>
+            <div class="text-xs text-[#718096] mt-1 flex items-center">
+                <span>Confirmed student seats</span>
+            </div>
+        </div>
+
+        <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+            <div class="text-[13px] font-medium text-[#718096]">Upcoming events</div>
+            <div class="text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">{{ upcoming_events_count }}</div>
+            <div class="text-xs text-[#718096] mt-1 flex items-center">
+                <span>Active schedules</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registrations by Event (Pure CSS Bars) & Categories -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Horizontal Bar List (2 cols) -->
+        <div class="lg:col-span-2 bg-white border border-[#E2E8F0] rounded-[6px] p-5 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-serif text-base font-semibold text-[#1A202C]">
+                    Registrations by event
+                </h2>
+                <span class="text-xs text-[#718096]">Top events by attendance</span>
+            </div>
+
+            {% if events_by_popularity %}
+                <div class="space-y-3.5">
+                    {% for ev in events_by_popularity %}
+                    <div>
+                        <div class="flex items-center justify-between text-xs mb-1">
+                            <span class="font-medium text-[#1A202C] truncate max-w-sm">{{ ev.title }}</span>
+                            <span class="tabular-nums text-[#718096]">{{ ev.active_count }} / {{ ev.capacity }} seats ({{ ev.seat_percentage }}%)</span>
+                        </div>
+                        <div class="w-full bg-[#E2E8F0] rounded-full h-2 overflow-hidden">
+                            <div class="h-2 rounded-full transition-all duration-150 {% if ev.seat_percentage >= 90 %}bg-[#9B1C1C]{% elif ev.seat_percentage >= 75 %}bg-[#8A5A00]{% else %}bg-[#1F3A5F]{% endif %}" style="width: {{ ev.seat_percentage }}%;"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-sm text-[#718096] text-center py-6">No event records available.</p>
+            {% endif %}
+        </div>
+
+        <!-- Categories and Students Summary (1 col) -->
+        <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-5 shadow-[0_1px_2px_rgba(16,24,40,0.05)] flex flex-col justify-between">
+            <div>
+                <h2 class="font-serif text-base font-semibold text-[#1A202C] mb-3">
+                    Categories breakdown
+                </h2>
+                <div class="flex flex-wrap gap-2">
+                    {% for item in category_stats %}
+                        <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-[#F7F8FA] border border-[#E2E8F0] rounded-[4px] text-xs">
+                            <span class="w-2 h-2 rounded-full" style="background-color: {{ item.category|category_dot_color }};" aria-hidden="true"></span>
+                            <span class="font-medium text-[#1A202C]">{{ item.category }}</span>
+                            <span class="tabular-nums text-[#718096]">({{ item.count }})</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-[#EDF2F7] mt-4 flex items-center justify-between text-xs text-[#718096]">
+                <span>Registered students: <strong class="text-[#1A202C] tabular-nums">{{ total_students }}</strong></span>
+                <a href="{% url 'student_list' %}" class="text-[#1F3A5F] font-semibold hover:underline">
+                    View directory &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Events & Recent Registrations Tables -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Upcoming Events Table (2 cols) -->
+        <div class="lg:col-span-2 space-y-3">
+            <div class="flex items-center justify-between">
+                <h2 class="font-serif text-lg font-semibold text-[#1A202C]">
+                    Upcoming events
+                </h2>
+                <a href="{% url 'event_list' %}" class="text-sm text-[#1F3A5F] font-semibold hover:underline">
+                    View all &rarr;
+                </a>
+            </div>
+
+            <div class="bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                {% if upcoming_events %}
+                    <div class="overflow-x-auto max-h-[360px] overflow-y-auto">
+                        <table class="w-full text-left text-sm" role="table">
+                            <thead class="bg-[#F7F8FA] border-b border-[#E2E8F0] text-[13px] font-semibold text-[#4A5568] sticky top-0 z-10">
+                                <tr>
+                                    <th scope="col" class="py-3 px-4">Event title</th>
+                                    <th scope="col" class="py-3 px-4">Category</th>
+                                    <th scope="col" class="py-3 px-4">Date</th>
+                                    <th scope="col" class="py-3 px-4 text-right">Occupancy</th>
+                                    <th scope="col" class="py-3 px-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-[#EDF2F7]">
+                                {% for ev in upcoming_events %}
+                                <tr class="hover:bg-[#F7F8FA] transition-colors duration-150">
+                                    <td class="py-3 px-4">
+                                        <div class="font-medium text-[#1A202C]">{{ ev.title }}</div>
+                                        <div class="text-xs text-[#718096]">{{ ev.venue }}</div>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center space-x-1.5">
+                                            <span class="w-1.5 h-1.5 rounded-full" style="background-color: {{ ev.category|category_dot_color }};" aria-hidden="true"></span>
+                                            <span class="text-xs text-[#4A5568]">{{ ev.category }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 tabular-nums text-[#4A5568]">
+                                        {{ ev.event_date|short_date }}
+                                    </td>
+                                    <td class="py-3 px-4 text-right tabular-nums text-[#4A5568]">
+                                        {{ ev.active_registrations_count }} / {{ ev.capacity }}
+                                    </td>
+                                    <td class="py-3 px-4 text-right">
+                                        <a href="{% url 'event_update' ev.pk %}" class="text-xs font-semibold text-[#1F3A5F] hover:underline">
+                                            Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    {% include "components/empty_state.html" with title="No upcoming events" message="There are no future events scheduled currently." action_url="/admin/events/new/" action_text="Create event" %}
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Registrations (1 col) -->
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <h2 class="font-serif text-lg font-semibold text-[#1A202C]">
+                    Recent registrations
+                </h2>
+                <a href="{% url 'registration_list' %}" class="text-sm text-[#1F3A5F] font-semibold hover:underline">
+                    View all &rarr;
+                </a>
+            </div>
+
+            <div class="bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                {% if recent_registrations %}
+                    <div class="divide-y divide-[#EDF2F7] text-sm max-h-[360px] overflow-y-auto">
+                        {% for reg in recent_registrations %}
+                        <div class="p-3.5 hover:bg-[#F7F8FA] transition-colors duration-150 flex items-start justify-between">
+                            <div>
+                                <div class="font-medium text-[#1A202C]">{{ reg.user.full_name|default:reg.user.username|title }}</div>
+                                <div class="text-xs text-[#718096] truncate max-w-[170px]">{{ reg.event.title }}</div>
+                                <div class="text-xs text-[#718096] tabular-nums mt-0.5">{{ reg.registration_date|datetime_full }}</div>
+                            </div>
+                            <div>
+                                {% include "components/status_badge.html" with status=reg.status %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {% include "components/empty_state.html" with title="No registrations" message="No registration activity recorded yet." icon="ticket" %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

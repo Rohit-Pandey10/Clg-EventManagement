@@ -1,0 +1,27 @@
+{% if status == 'registered' or status == 'Active' %}
+    <span class="inline-flex items-center h-[22px] px-2 rounded-[4px] text-xs font-medium bg-[#E6F4EA] text-[#276749] border border-[#C6F6D5]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#276749] mr-1.5" aria-hidden="true"></span>
+        <span>Registered</span>
+    </span>
+{% elif status == 'cancelled' or status == 'Cancelled' %}
+    <span class="inline-flex items-center h-[22px] px-2 rounded-[4px] text-xs font-medium bg-[#FDECEC] text-[#9B1C1C] border border-[#FED7D7]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#9B1C1C] mr-1.5" aria-hidden="true"></span>
+        <span>Cancelled</span>
+    </span>
+{% elif status == 'full' or status == 'Sold out' %}
+    <span class="inline-flex items-center h-[22px] px-2 rounded-[4px] text-xs font-medium bg-[#FDECEC] text-[#9B1C1C] border border-[#FED7D7]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#9B1C1C] mr-1.5" aria-hidden="true"></span>
+        <span>Full</span>
+    </span>
+{% elif status == 'fast' or status == 'Filling fast' %}
+    <span class="inline-flex items-center h-[22px] px-2 rounded-[4px] text-xs font-medium bg-[#FFF4DB] text-[#8A5A00] border border-[#FEEBC8]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#8A5A00] mr-1.5" aria-hidden="true"></span>
+        <span>Filling fast</span>
+    </span>
+{% else %}
+    <span class="inline-flex items-center h-[22px] px-2 rounded-[4px] text-xs font-medium bg-[#EDF2F7] text-[#4A5568] border border-[#E2E8F0]">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#718096] mr-1.5" aria-hidden="true"></span>
+        <span>{{ label|default:status|title }}</span>
+    </span>
+{% endif %}
+

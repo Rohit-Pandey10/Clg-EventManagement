@@ -1,0 +1,24 @@
+{% load cems_extras %}
+<div class="space-y-1.5 w-full">
+    <div class="flex items-center justify-between text-xs">
+        <div class="flex items-center space-x-1.5">
+            {% if event.is_full or event.available_seats <= 0 %}
+                <span class="font-semibold text-[#9B1C1C]">Sold out</span>
+            {% else %}
+                <span class="font-semibold text-[#1A202C] tabular-nums">{{ event.available_seats }} seats left</span>
+                <span class="text-[#718096] tabular-nums">of {{ event.capacity }}</span>
+            {% endif %}
+        </div>
+        <div>
+            {% if event.available_seats > 0 and event.available_seats <= 10 %}
+                {% include "components/status_badge.html" with status="fast" label="Filling fast" %}
+            {% elif event.is_full or event.available_seats <= 0 %}
+                {% include "components/status_badge.html" with status="full" label="Full" %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="w-full bg-[#E2E8F0] rounded-full h-1.5 overflow-hidden">
+        <div class="h-1.5 transition-all duration-150 {% if event.seat_percentage >= 90 %}bg-[#9B1C1C]{% elif event.seat_percentage >= 75 %}bg-[#8A5A00]{% else %}bg-[#1F3A5F]{% endif %}" style="width: {{ event.seat_percentage }}%;"></div>
+    </div>
+</div>
+
