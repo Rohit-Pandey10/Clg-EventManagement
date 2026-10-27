@@ -41,12 +41,13 @@
 
     <!-- Sticky Navigation Header -->
     <header class="bg-white border-b border-[#E2E8F0] sticky top-0 z-40 transition-shadow duration-150">
-        <div class="max-w-[1200px] mx-auto px-6">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-14 sm:h-16">
                 <!-- Institution Wordmark (Serif, no icon tile) -->
-                <div class="flex items-center">
-                    <a href="{% url 'dashboard' %}" class="font-serif text-lg font-semibold text-[#1A202C] hover:text-[#1F3A5F] transition-colors duration-150">
-                        College Event Management System
+                <div class="flex items-center min-w-0 pr-2">
+                    <a href="{% url 'dashboard' %}" class="font-serif text-base sm:text-lg font-semibold text-[#1A202C] hover:text-[#1F3A5F] transition-colors duration-150 truncate">
+                        <span class="sm:hidden">CEMS Events</span>
+                        <span class="hidden sm:inline">College Event Management System</span>
                     </a>
                 </div>
 
@@ -174,7 +175,7 @@
     </header>
 
     <!-- Operational Alert Messages Region (aria-live="polite") -->
-    <div class="max-w-[1200px] w-full mx-auto px-6 pt-4" aria-live="polite">
+    <div class="max-w-[1200px] w-full mx-auto px-4 sm:px-6 pt-3 sm:pt-4" aria-live="polite">
         {% if messages %}
             <div class="space-y-2">
                 {% for message in messages %}
@@ -201,13 +202,13 @@
     </div>
 
     <!-- Main Content Area -->
-    <main class="flex-1 max-w-[1200px] w-full mx-auto px-6 py-5">
+    <main class="flex-1 max-w-[1200px] w-full mx-auto px-4 sm:px-6 py-4 sm:py-5">
         {% block content %}{% endblock %}
     </main>
 
     <!-- Slim Institutional Footer -->
     <footer class="mt-auto border-t border-[#E2E8F0] bg-white">
-        <div class="max-w-[1200px] mx-auto px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between text-xs text-[#718096]">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between text-xs text-[#718096]">
             <div>College Event Management System &middot; Academic Year 2026</div>
             <div class="mt-1 sm:mt-0">Python &amp; Django Laboratory Project</div>
         </div>

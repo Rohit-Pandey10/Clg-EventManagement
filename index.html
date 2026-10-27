@@ -2,11 +2,11 @@
 <html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>College Event Management System (CEMS) &middot; Live Preview</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%231F3A5F'/><text x='16' y='22' font-family='Georgia, serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>C</text></svg>">
 
-    <!-- Fonts -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
@@ -17,6 +17,9 @@
         tailwind.config = {
             theme: {
                 extend: {
+                    screens: {
+                        'xs': '420px',
+                    },
                     colors: {
                         primary: '#1F3A5F',
                         primaryHover: '#162B47',
@@ -55,20 +58,36 @@
         .badge-cancelled { background-color: #FDECEC; color: #9B1C1C; border: 1px solid #FED7D7; }
         .badge-neutral { background-color: #EDF2F7; color: #4A5568; border: 1px solid #E2E8F0; }
         .badge-warning { background-color: #FFF4DB; color: #8A5A00; border: 1px solid #FEEBC8; }
+
+        /* Hide scrollbars for clean horizontal pill swiping */
+        .scrollbar-none {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Prevent mobile safari automatic zoom on inputs */
+        @media screen and (max-width: 640px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
     </style>
 </head>
 <body class="min-h-full flex flex-col bg-[#F7F8FA] text-[#1A202C] antialiased">
 
     <!-- Top Banner: GitHub Pages Notice -->
     <aside class="bg-[#1F3A5F] text-white text-xs py-2 px-4 border-b border-[#162B47]">
-        <div class="max-w-[1200px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div class="max-w-[1200px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2 text-center sm:text-left">
             <div class="flex items-center space-x-2">
-                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span><strong>Live Interactive Demo</strong> &middot; Full Django + SQLite repository source code is available in this repo.</span>
+                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
+                <span><strong>Live Interactive Demo</strong> &middot; Django backend in repository.</span>
             </div>
             <div class="flex items-center space-x-3">
                 <a href="https://github.com/Rohit-Pandey10/Clg-EvenetManagement" target="_blank" rel="noopener noreferrer" class="underline hover:text-blue-200 transition-colors">
-                    GitHub Repository &rarr;
+                    GitHub Repo &rarr;
                 </a>
             </div>
         </div>
@@ -76,32 +95,34 @@
 
     <!-- Header Navigation -->
     <header class="bg-white border-b border-[#E2E8F0] sticky top-0 z-40">
-        <div class="max-w-[1200px] mx-auto px-6">
-            <div class="flex items-center justify-between h-14 sm:h-16">
-                <!-- Institution Wordmark -->
-                <div class="flex items-center space-x-3">
-                    <span class="font-serif text-lg font-semibold text-[#1A202C]">
-                        College Event Management System
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
+                <!-- Institution Wordmark (Responsive) -->
+                <div class="flex items-center space-x-2 min-w-0 pr-1">
+                    <span class="font-serif text-base sm:text-lg font-semibold text-[#1A202C] truncate">
+                        <span class="xs:hidden">CEMS</span>
+                        <span class="hidden xs:inline sm:hidden">CEMS Events</span>
+                        <span class="hidden sm:inline">College Event Management System</span>
                     </span>
-                    <span class="hidden sm:inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-[#EDF2F7] text-[#4A5568] rounded-[3px]">
-                        Preview
+                    <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 bg-[#EDF2F7] text-[#4A5568] rounded-[3px] flex-shrink-0">
+                        Live
                     </span>
                 </div>
 
-                <!-- Role Switcher & Nav -->
-                <div class="flex items-center space-x-4">
+                <!-- Role Switcher & User Details -->
+                <div class="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
                     <!-- Portal Switcher Segmented Control -->
-                    <div class="bg-[#F7F8FA] border border-[#E2E8F0] p-1 rounded-[4px] flex items-center space-x-1 text-xs font-semibold">
-                        <button id="btn-portal-student" onclick="switchPortal('student')" class="px-3 py-1 rounded-[3px] bg-[#1F3A5F] text-white transition-colors duration-150">
-                            Student Portal
+                    <div class="bg-[#F7F8FA] border border-[#E2E8F0] p-0.5 sm:p-1 rounded-[4px] flex items-center space-x-0.5 sm:space-x-1 text-xs font-semibold">
+                        <button id="btn-portal-student" onclick="switchPortal('student')" class="px-2.5 sm:px-3 py-1.5 rounded-[3px] bg-[#1F3A5F] text-white transition-colors duration-150">
+                            Student<span class="hidden sm:inline"> Portal</span>
                         </button>
-                        <button id="btn-portal-admin" onclick="switchPortal('admin')" class="px-3 py-1 rounded-[3px] text-[#4A5568] hover:text-[#1A202C] transition-colors duration-150">
-                            Organizer Admin
+                        <button id="btn-portal-admin" onclick="switchPortal('admin')" class="px-2.5 sm:px-3 py-1.5 rounded-[3px] text-[#4A5568] hover:text-[#1A202C] transition-colors duration-150">
+                            Admin<span class="hidden sm:inline"> Portal</span>
                         </button>
                     </div>
 
-                    <!-- User Identity Badge -->
-                    <div class="hidden md:flex items-center space-x-2 border-l border-[#E2E8F0] pl-4">
+                    <!-- User Identity Badge (Desktop) -->
+                    <div class="hidden md:flex items-center space-x-2 border-l border-[#E2E8F0] pl-3">
                         <span id="user-avatar" class="w-8 h-8 rounded-full bg-[#E0E7FF] text-[#1F3A5F] flex items-center justify-center font-bold text-xs tabular-nums flex-shrink-0">
                             AS
                         </span>
@@ -114,14 +135,14 @@
             </div>
         </div>
 
-        <!-- Student Sub-Nav -->
+        <!-- Student Sub-Nav (Horizontally swipeable on mobile) -->
         <nav id="student-subnav" class="border-t border-[#EDF2F7] bg-white">
-            <div class="max-w-[1200px] mx-auto px-6 flex items-center space-x-6 text-sm">
-                <button onclick="switchStudentTab('browse')" id="tab-btn-browse" class="py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5">
+            <div class="max-w-[1200px] mx-auto px-4 sm:px-6 flex items-center space-x-5 sm:space-x-6 text-sm overflow-x-auto whitespace-nowrap scrollbar-none">
+                <button onclick="switchStudentTab('browse')" id="tab-btn-browse" class="py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5 flex-shrink-0">
                     <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span>Browse Events</span>
                 </button>
-                <button onclick="switchStudentTab('my-regs')" id="tab-btn-my-regs" class="py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5">
+                <button onclick="switchStudentTab('my-regs')" id="tab-btn-my-regs" class="py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0">
                     <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z"></path></svg>
                     <span>My Registrations</span>
                     <span id="badge-my-regs-count" class="ml-1 px-1.5 py-0.2 bg-[#EDF2F7] text-[#4A5568] text-xs rounded-full tabular-nums font-bold">2</span>
@@ -129,18 +150,18 @@
             </div>
         </nav>
 
-        <!-- Admin Sub-Nav -->
+        <!-- Admin Sub-Nav (Horizontally swipeable on mobile) -->
         <nav id="admin-subnav" class="hidden border-t border-[#EDF2F7] bg-white">
-            <div class="max-w-[1200px] mx-auto px-6 flex items-center space-x-6 text-sm">
-                <button onclick="switchAdminTab('overview')" id="tab-btn-admin-overview" class="py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5">
+            <div class="max-w-[1200px] mx-auto px-4 sm:px-6 flex items-center space-x-5 sm:space-x-6 text-sm overflow-x-auto whitespace-nowrap scrollbar-none">
+                <button onclick="switchAdminTab('overview')" id="tab-btn-admin-overview" class="py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5 flex-shrink-0">
                     <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"></path></svg>
-                    <span>Dashboard Overview</span>
+                    <span>Overview</span>
                 </button>
-                <button onclick="switchAdminTab('events')" id="tab-btn-admin-events" class="py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5">
+                <button onclick="switchAdminTab('events')" id="tab-btn-admin-events" class="py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0">
                     <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"></path></svg>
                     <span>Events Management</span>
                 </button>
-                <button onclick="switchAdminTab('students')" id="tab-btn-admin-students" class="py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5">
+                <button onclick="switchAdminTab('students')" id="tab-btn-admin-students" class="py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0">
                     <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"></path></svg>
                     <span>Students</span>
                 </button>
@@ -149,22 +170,22 @@
     </header>
 
     <!-- Operational Alerts Region -->
-    <div id="alerts-container" class="max-w-[1200px] w-full mx-auto px-6 pt-4 space-y-2" aria-live="polite"></div>
+    <div id="alerts-container" class="max-w-[1200px] w-full mx-auto px-4 sm:px-6 pt-3 sm:pt-4 space-y-2" aria-live="polite"></div>
 
     <!-- Main Content Area -->
-    <main class="flex-1 max-w-[1200px] w-full mx-auto px-6 py-5">
+    <main class="flex-1 max-w-[1200px] w-full mx-auto px-4 sm:px-6 py-4 sm:py-6">
 
         <!-- ============================================================= -->
         <!-- STUDENT VIEW: BROWSE EVENTS -->
         <!-- ============================================================= -->
-        <section id="view-student-browse" class="space-y-6">
+        <section id="view-student-browse" class="space-y-5 sm:space-y-6">
             <!-- Page Header -->
-            <div class="border-b border-[#E2E8F0] pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div class="border-b border-[#E2E8F0] pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 sm:gap-3">
                 <div>
-                    <h1 class="font-serif text-2xl font-semibold text-[#1A202C] tracking-tight">Browse Campus Events</h1>
-                    <p class="text-sm text-[#4A5568] mt-1">Discover, filter, and register for workshops, competitions, and college fests.</p>
+                    <h1 class="font-serif text-xl sm:text-2xl font-semibold text-[#1A202C] tracking-tight">Browse Campus Events</h1>
+                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Discover, filter, and register for workshops, competitions, and college fests.</p>
                 </div>
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-2 pt-1 sm:pt-0">
                     <button onclick="resetData()" class="text-xs text-[#718096] hover:text-[#1A202C] underline">
                         Reset Demo Data
                     </button>
@@ -172,14 +193,14 @@
             </div>
 
             <!-- Filters Toolbar -->
-            <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)] space-y-3">
-                <div class="flex flex-col sm:flex-row items-center gap-3">
+            <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-3.5 sm:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)] space-y-3">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
                     <div class="w-full sm:flex-1">
                         <input id="search-input" type="text" oninput="renderBrowseEvents()" placeholder="Search by title, venue, or keywords..."
                                class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] placeholder-[#718096] focus:outline-none focus:border-[#1F3A5F] focus:ring-1 focus:ring-[#1F3A5F] transition-colors">
                     </div>
                     <div class="w-full sm:w-48">
-                        <select id="sort-select" onchange="renderBrowseEvents()" class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] focus:outline-none focus:border-[#1F3A5F] focus:ring-1 focus:ring-[#1F3A5F]">
+                        <select id="sort-select" onchange="renderBrowseEvents()" class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] focus:outline-none focus:border-[#1F3A5F] focus:ring-1 focus:ring-[#1F3A5F] cursor-pointer">
                             <option value="date">Date (upcoming)</option>
                             <option value="fee">Fee (lowest)</option>
                             <option value="capacity">Capacity (highest)</option>
@@ -188,41 +209,41 @@
                 </div>
 
                 <!-- Category Segmented Chips -->
-                <div class="pt-2 border-t border-[#EDF2F7] flex flex-wrap items-center justify-between gap-2">
+                <div class="pt-2 border-t border-[#EDF2F7] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                     <div class="flex flex-wrap items-center gap-1.5" id="category-chips">
                         <!-- Populated by JS -->
                     </div>
-                    <div id="events-count-text" class="text-xs text-[#718096] tabular-nums">0 events</div>
+                    <div id="events-count-text" class="text-xs text-[#718096] tabular-nums self-end sm:self-center">0 events</div>
                 </div>
             </div>
 
             <!-- Events Grid -->
-            <div id="events-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div id="events-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
         </section>
 
         <!-- ============================================================= -->
         <!-- STUDENT VIEW: MY REGISTRATIONS -->
         <!-- ============================================================= -->
-        <section id="view-student-my-regs" class="hidden space-y-6">
-            <div class="border-b border-[#E2E8F0] pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <section id="view-student-my-regs" class="hidden space-y-5 sm:space-y-6">
+            <div class="border-b border-[#E2E8F0] pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
                 <div>
-                    <h1 class="font-serif text-2xl font-semibold text-[#1A202C] tracking-tight">My Registrations</h1>
-                    <p class="text-sm text-[#4A5568] mt-1">Review your confirmed event passes and cancellation history.</p>
+                    <h1 class="font-serif text-xl sm:text-2xl font-semibold text-[#1A202C] tracking-tight">My Registrations</h1>
+                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Review your confirmed event passes and cancellation history.</p>
                 </div>
-                <button onclick="switchStudentTab('browse')" class="h-9 px-3.5 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-xs font-semibold rounded-[4px] transition-colors duration-150 inline-flex items-center">
+                <button onclick="switchStudentTab('browse')" class="h-9 px-3.5 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-xs font-semibold rounded-[4px] transition-colors duration-150 inline-flex items-center self-start sm:self-auto">
                     Browse more events &rarr;
                 </button>
             </div>
 
             <!-- Tab Filter Pills -->
-            <div class="flex items-center space-x-2 text-xs font-semibold">
-                <button onclick="filterMyRegs('all')" id="pill-reg-all" class="h-8 px-3 rounded-[4px] bg-[#1F3A5F] text-white">All passes</button>
-                <button onclick="filterMyRegs('registered')" id="pill-reg-registered" class="h-8 px-3 rounded-[4px] bg-[#F7F8FA] border border-[#E2E8F0] text-[#4A5568] hover:bg-[#EDF2F7]">Active only</button>
-                <button onclick="filterMyRegs('cancelled')" id="pill-reg-cancelled" class="h-8 px-3 rounded-[4px] bg-[#F7F8FA] border border-[#E2E8F0] text-[#4A5568] hover:bg-[#EDF2F7]">Cancelled</button>
+            <div class="flex items-center space-x-2 text-xs font-semibold overflow-x-auto pb-1 scrollbar-none">
+                <button onclick="filterMyRegs('all')" id="pill-reg-all" class="h-8 px-3 rounded-[4px] bg-[#1F3A5F] text-white flex-shrink-0">All passes</button>
+                <button onclick="filterMyRegs('registered')" id="pill-reg-registered" class="h-8 px-3 rounded-[4px] bg-[#F7F8FA] border border-[#E2E8F0] text-[#4A5568] hover:bg-[#EDF2F7] flex-shrink-0">Active only</button>
+                <button onclick="filterMyRegs('cancelled')" id="pill-reg-cancelled" class="h-8 px-3 rounded-[4px] bg-[#F7F8FA] border border-[#E2E8F0] text-[#4A5568] hover:bg-[#EDF2F7] flex-shrink-0">Cancelled</button>
             </div>
 
-            <!-- Table of Registrations -->
-            <div class="bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+            <!-- Desktop Table View (>= 768px) -->
+            <div class="hidden md:block bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm" role="table">
                         <thead class="bg-[#F7F8FA] border-b border-[#E2E8F0] text-[13px] font-semibold text-[#4A5568]">
@@ -239,70 +260,74 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Mobile Stacked Cards View (< 768px) -->
+            <div id="my-regs-mobile" class="md:hidden space-y-3"></div>
         </section>
 
         <!-- ============================================================= -->
         <!-- ADMIN VIEW: DASHBOARD OVERVIEW -->
         <!-- ============================================================= -->
-        <section id="view-admin-overview" class="hidden space-y-6">
-            <div class="border-b border-[#E2E8F0] pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <section id="view-admin-overview" class="hidden space-y-5 sm:space-y-6">
+            <div class="border-b border-[#E2E8F0] pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
                 <div>
-                    <h1 class="font-serif text-2xl font-semibold text-[#1A202C] tracking-tight">Dashboard Overview</h1>
-                    <p class="text-sm text-[#4A5568] mt-1">Operational metrics, event scheduling, and registration summary.</p>
+                    <h1 class="font-serif text-xl sm:text-2xl font-semibold text-[#1A202C] tracking-tight">Dashboard Overview</h1>
+                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Operational metrics, event scheduling, and registration summary.</p>
                 </div>
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-3 self-start sm:self-auto">
                     <button onclick="switchAdminTab('events')" class="h-9 px-3.5 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-xs font-semibold rounded-[4px] transition-colors">
                         Manage Events
                     </button>
                 </div>
             </div>
 
-            <!-- Stat Strip (4 Cards) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
-                    <div class="text-[13px] font-medium text-[#718096]">Total events</div>
-                    <div id="stat-total-events" class="text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">0</div>
-                    <div class="text-xs text-[#718096] mt-1">All time created</div>
+            <!-- Stat Strip (2 cols on mobile, 4 on desktop) -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-3.5 sm:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                    <div class="text-xs sm:text-[13px] font-medium text-[#718096]">Total events</div>
+                    <div id="stat-total-events" class="text-2xl sm:text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">0</div>
+                    <div class="text-[11px] sm:text-xs text-[#718096] mt-1">All time created</div>
                 </div>
-                <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
-                    <div class="text-[13px] font-medium text-[#718096]">Students</div>
-                    <div id="stat-total-students" class="text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">4</div>
-                    <div class="text-xs text-[#718096] mt-1">Registered student accounts</div>
+                <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-3.5 sm:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                    <div class="text-xs sm:text-[13px] font-medium text-[#718096]">Students</div>
+                    <div id="stat-total-students" class="text-2xl sm:text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">4</div>
+                    <div class="text-[11px] sm:text-xs text-[#718096] mt-1">Registered accounts</div>
                 </div>
-                <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
-                    <div class="text-[13px] font-medium text-[#718096]">Active registrations</div>
-                    <div id="stat-active-regs" class="text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">0</div>
-                    <div class="text-xs text-[#718096] mt-1">Confirmed student seats</div>
+                <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-3.5 sm:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                    <div class="text-xs sm:text-[13px] font-medium text-[#718096]">Active registrations</div>
+                    <div id="stat-active-regs" class="text-2xl sm:text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">0</div>
+                    <div class="text-[11px] sm:text-xs text-[#718096] mt-1">Confirmed seats</div>
                 </div>
-                <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
-                    <div class="text-[13px] font-medium text-[#718096]">Upcoming events</div>
-                    <div id="stat-upcoming-events" class="text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">0</div>
-                    <div class="text-xs text-[#718096] mt-1">Active schedules</div>
+                <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-3.5 sm:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                    <div class="text-xs sm:text-[13px] font-medium text-[#718096]">Upcoming events</div>
+                    <div id="stat-upcoming-events" class="text-2xl sm:text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">0</div>
+                    <div class="text-[11px] sm:text-xs text-[#718096] mt-1">Active schedules</div>
                 </div>
             </div>
 
             <!-- Popularity list -->
-            <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-5 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
-                <h2 class="font-serif text-base font-semibold text-[#1A202C] mb-4">Seat Attendance by Event</h2>
-                <div id="admin-popularity-list" class="space-y-4"></div>
+            <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 sm:p-5 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                <h2 class="font-serif text-base font-semibold text-[#1A202C] mb-3.5">Seat Attendance by Event</h2>
+                <div id="admin-popularity-list" class="space-y-3.5 sm:space-y-4"></div>
             </div>
         </section>
 
         <!-- ============================================================= -->
         <!-- ADMIN VIEW: EVENTS MANAGEMENT -->
         <!-- ============================================================= -->
-        <section id="view-admin-events" class="hidden space-y-6">
-            <div class="border-b border-[#E2E8F0] pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <section id="view-admin-events" class="hidden space-y-5 sm:space-y-6">
+            <div class="border-b border-[#E2E8F0] pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
                 <div>
-                    <h1 class="font-serif text-2xl font-semibold text-[#1A202C] tracking-tight">Events Management</h1>
-                    <p class="text-sm text-[#4A5568] mt-1">Add, update, or remove campus events and monitor capacities.</p>
+                    <h1 class="font-serif text-xl sm:text-2xl font-semibold text-[#1A202C] tracking-tight">Events Management</h1>
+                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Add, monitor, or remove campus events and observe capacities.</p>
                 </div>
-                <button onclick="promptCreateEvent()" class="h-9 px-3.5 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-xs font-semibold rounded-[4px] transition-colors">
+                <button onclick="promptCreateEvent()" class="h-9 px-3.5 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-xs font-semibold rounded-[4px] transition-colors self-start sm:self-auto">
                     + Create new event
                 </button>
             </div>
 
-            <div class="bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+            <!-- Desktop Table (>= 768px) -->
+            <div class="hidden md:block bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm" role="table">
                         <thead class="bg-[#F7F8FA] border-b border-[#E2E8F0] text-[13px] font-semibold text-[#4A5568]">
@@ -319,20 +344,24 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Mobile Stacked Cards (< 768px) -->
+            <div id="admin-events-mobile" class="md:hidden space-y-3"></div>
         </section>
 
         <!-- ============================================================= -->
         <!-- ADMIN VIEW: STUDENTS DIRECTORY -->
         <!-- ============================================================= -->
-        <section id="view-admin-students" class="hidden space-y-6">
-            <div class="border-b border-[#E2E8F0] pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <section id="view-admin-students" class="hidden space-y-5 sm:space-y-6">
+            <div class="border-b border-[#E2E8F0] pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
                 <div>
-                    <h1 class="font-serif text-2xl font-semibold text-[#1A202C] tracking-tight">Students Directory</h1>
-                    <p class="text-sm text-[#4A5568] mt-1">Directory of registered students, roll numbers, and academic departments.</p>
+                    <h1 class="font-serif text-xl sm:text-2xl font-semibold text-[#1A202C] tracking-tight">Students Directory</h1>
+                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Directory of registered students, roll numbers, and academic departments.</p>
                 </div>
             </div>
 
-            <div class="bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+            <!-- Desktop Table (>= 768px) -->
+            <div class="hidden md:block bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm" role="table">
                         <thead class="bg-[#F7F8FA] border-b border-[#E2E8F0] text-[13px] font-semibold text-[#4A5568]">
@@ -348,13 +377,16 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Mobile Stacked Cards (< 768px) -->
+            <div id="admin-students-mobile" class="md:hidden space-y-3"></div>
         </section>
 
     </main>
 
     <!-- Footer -->
     <footer class="mt-auto border-t border-[#E2E8F0] bg-white">
-        <div class="max-w-[1200px] mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between text-xs text-[#718096] gap-2">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between text-xs text-[#718096] gap-2 text-center sm:text-left">
             <div>College Event Management System &middot; Academic Year 2026</div>
             <div class="flex items-center space-x-3">
                 <a href="https://github.com/Rohit-Pandey10/Clg-EvenetManagement" target="_blank" rel="noopener noreferrer" class="hover:text-[#1F3A5F]">GitHub Source</a>
@@ -508,12 +540,12 @@
             const container = document.getElementById("alerts-container");
             const alert = document.createElement("div");
             const isSuccess = type === "success";
-            alert.className = `flex items-start justify-between p-3 rounded-[4px] border text-sm transition-opacity duration-200 ${
+            alert.className = `flex items-start justify-between p-3 rounded-[4px] border text-xs sm:text-sm transition-opacity duration-200 ${
                 isSuccess ? "bg-[#E6F4EA] border-[#C6F6D5] text-[#276749]" : "bg-[#FDECEC] border-[#FED7D7] text-[#9B1C1C]"
             }`;
             alert.innerHTML = `
                 <div class="pr-2 leading-relaxed font-medium">${msg}</div>
-                <button type="button" onclick="this.parentElement.remove()" class="text-current hover:opacity-75 ml-3 text-lg leading-none font-bold">&times;</button>
+                <button type="button" onclick="this.parentElement.remove()" class="text-current hover:opacity-75 ml-2 text-base leading-none font-bold">&times;</button>
             `;
             container.appendChild(alert);
             setTimeout(() => {
@@ -551,22 +583,22 @@
             const userRole = document.getElementById("user-role");
 
             if (portal === "student") {
-                btnStudent.className = "px-3 py-1 rounded-[3px] bg-[#1F3A5F] text-white transition-colors duration-150";
-                btnAdmin.className = "px-3 py-1 rounded-[3px] text-[#4A5568] hover:text-[#1A202C] transition-colors duration-150";
+                btnStudent.className = "px-2.5 sm:px-3 py-1.5 rounded-[3px] bg-[#1F3A5F] text-white transition-colors duration-150";
+                btnAdmin.className = "px-2.5 sm:px-3 py-1.5 rounded-[3px] text-[#4A5568] hover:text-[#1A202C] transition-colors duration-150";
                 studentNav.classList.remove("hidden");
                 adminNav.classList.add("hidden");
-                userAvatar.textContent = "AS";
-                userName.textContent = "Alice Sharma";
-                userRole.textContent = "Roll: CS2026-001";
+                if (userAvatar) userAvatar.textContent = "AS";
+                if (userName) userName.textContent = "Alice Sharma";
+                if (userRole) userRole.textContent = "Roll: CS2026-001";
                 switchStudentTab("browse");
             } else {
-                btnAdmin.className = "px-3 py-1 rounded-[3px] bg-[#1F3A5F] text-white transition-colors duration-150";
-                btnStudent.className = "px-3 py-1 rounded-[3px] text-[#4A5568] hover:text-[#1A202C] transition-colors duration-150";
+                btnAdmin.className = "px-2.5 sm:px-3 py-1.5 rounded-[3px] bg-[#1F3A5F] text-white transition-colors duration-150";
+                btnStudent.className = "px-2.5 sm:px-3 py-1.5 rounded-[3px] text-[#4A5568] hover:text-[#1A202C] transition-colors duration-150";
                 adminNav.classList.remove("hidden");
                 studentNav.classList.add("hidden");
-                userAvatar.textContent = "AD";
-                userName.textContent = "System Admin";
-                userRole.textContent = "Organizer Portal";
+                if (userAvatar) userAvatar.textContent = "AD";
+                if (userName) userName.textContent = "System Admin";
+                if (userRole) userRole.textContent = "Organizer Portal";
                 switchAdminTab("overview");
             }
         }
@@ -581,13 +613,13 @@
 
             if (tab === "browse") {
                 vBrowse.classList.remove("hidden");
-                btnBrowse.className = "py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5";
-                btnMyRegs.className = "py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5";
+                btnBrowse.className = "py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5 flex-shrink-0";
+                btnMyRegs.className = "py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0";
                 renderBrowseEvents();
             } else {
                 vMyRegs.classList.remove("hidden");
-                btnMyRegs.className = "py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5";
-                btnBrowse.className = "py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5";
+                btnMyRegs.className = "py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5 flex-shrink-0";
+                btnBrowse.className = "py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0";
                 renderMyRegs();
             }
         }
@@ -600,15 +632,15 @@
                 const btn = document.getElementById(`tab-btn-admin-${t}`);
                 if (t === tab) {
                     el.classList.remove("hidden");
-                    btn.className = "py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5";
+                    btn.className = "py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5 flex-shrink-0";
                 } else {
-                    btn.className = "py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5";
+                    btn.className = "py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0";
                 }
             });
 
             if (tab === "overview") renderAdminOverview();
             if (tab === "events") renderAdminEvents();
-            if (tab === "students") renderAdminStudents();
+            if (tab === "students") renderAdminEvents();
         }
 
         function hideAllViews() {
@@ -744,7 +776,7 @@
 
             if (filtered.length === 0) {
                 grid.innerHTML = `
-                    <div class="col-span-full bg-white border border-[#E2E8F0] rounded-[6px] p-10 text-center">
+                    <div class="col-span-full bg-white border border-[#E2E8F0] rounded-[6px] p-8 sm:p-10 text-center">
                         <div class="text-[#718096] text-sm">No campus events found matching your criteria.</div>
                     </div>
                 `;
@@ -771,7 +803,7 @@
                     actionHtml = `
                         <div class="flex items-center justify-between">
                             <span class="badge badge-registered">Registered</span>
-                            <button onclick="cancelRegistration(${userReg.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline">
+                            <button onclick="cancelRegistration(${userReg.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline p-1">
                                 Cancel seat
                             </button>
                         </div>
@@ -803,17 +835,17 @@
                 }
 
                 return `
-                    <article class="bg-white border border-[#E2E8F0] hover:border-[#CBD5E0] rounded-[6px] p-5 flex flex-col justify-between transition-colors shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                    <article class="bg-white border border-[#E2E8F0] hover:border-[#CBD5E0] rounded-[6px] p-4 sm:p-5 flex flex-col justify-between transition-colors shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
                         <div>
-                            <div class="flex items-start justify-between gap-3 mb-3">
-                                <div class="flex items-center space-x-3">
-                                    <div class="flex flex-col items-center justify-center w-12 h-12 bg-[#F7F8FA] border border-[#E2E8F0] rounded-[4px] text-center flex-shrink-0">
-                                        <span class="text-[10px] font-semibold text-[#718096] uppercase leading-none">${monthStr}</span>
-                                        <span class="text-lg font-bold text-[#1A202C] tabular-nums leading-tight mt-0.5">${dayStr}</span>
+                            <div class="flex items-start justify-between gap-2.5 mb-2.5 sm:mb-3">
+                                <div class="flex items-center space-x-2.5 sm:space-x-3">
+                                    <div class="flex flex-col items-center justify-center w-11 h-11 sm:w-12 sm:h-12 bg-[#F7F8FA] border border-[#E2E8F0] rounded-[4px] text-center flex-shrink-0">
+                                        <span class="text-[9px] sm:text-[10px] font-semibold text-[#718096] uppercase leading-none">${monthStr}</span>
+                                        <span class="text-base sm:text-lg font-bold text-[#1A202C] tabular-nums leading-tight mt-0.5">${dayStr}</span>
                                     </div>
                                     <div>
                                         <div class="flex items-center space-x-1.5">
-                                            <span class="w-1.5 h-1.5 rounded-full inline-block" style="background-color: ${CATEGORY_COLORS[ev.category] || '#718096'};"></span>
+                                            <span class="w-1.5 h-1.5 rounded-full inline-block flex-shrink-0" style="background-color: ${CATEGORY_COLORS[ev.category] || '#718096'};"></span>
                                             <span class="text-xs font-medium text-[#4A5568]">${ev.category}</span>
                                         </div>
                                     </div>
@@ -821,15 +853,15 @@
                                 ${past ? '<span class="badge badge-neutral">Past</span>' : ''}
                             </div>
 
-                            <h3 class="font-serif text-lg font-semibold text-[#1A202C] leading-snug">
+                            <h3 class="font-serif text-base sm:text-lg font-semibold text-[#1A202C] leading-snug">
                                 ${ev.title}
                             </h3>
 
-                            <p class="text-sm text-[#4A5568] mt-2 line-clamp-2 leading-relaxed">
+                            <p class="text-xs sm:text-sm text-[#4A5568] mt-1.5 sm:mt-2 line-clamp-2 leading-relaxed">
                                 ${ev.description || ''}
                             </p>
 
-                            <dl class="mt-4 pt-3 border-t border-[#EDF2F7] grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                            <dl class="mt-3.5 sm:mt-4 pt-2.5 sm:pt-3 border-t border-[#EDF2F7] grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
                                 <div>
                                     <dt class="text-[#718096]">Venue</dt>
                                     <dd class="text-[#1A202C] font-medium mt-0.5 truncate" title="${ev.venue}">${ev.venue}</dd>
@@ -841,7 +873,7 @@
                             </dl>
 
                             <!-- Seat Bar -->
-                            <div class="mt-4 pt-3 border-t border-[#EDF2F7]">
+                            <div class="mt-3.5 sm:mt-4 pt-2.5 sm:pt-3 border-t border-[#EDF2F7]">
                                 <div class="flex items-center justify-between text-xs text-[#718096] mb-1 tabular-nums">
                                     <span>${available} seat${available === 1 ? '' : 's'} remaining</span>
                                     <span>${percent}%</span>
@@ -852,7 +884,7 @@
                             </div>
                         </div>
 
-                        <div class="mt-5 pt-3 border-t border-[#EDF2F7]">
+                        <div class="mt-4 sm:mt-5 pt-3 border-t border-[#EDF2F7]">
                             ${actionHtml}
                         </div>
                     </article>
@@ -861,7 +893,7 @@
         }
 
         // =============================================================
-        // RENDER: MY REGISTRATIONS
+        // RENDER: MY REGISTRATIONS (Desktop table + Mobile cards)
         // =============================================================
 
         function filterMyRegs(filter) {
@@ -869,9 +901,9 @@
             ["all", "registered", "cancelled"].forEach(f => {
                 const btn = document.getElementById(`pill-reg-${f}`);
                 if (f === filter) {
-                    btn.className = "h-8 px-3 rounded-[4px] bg-[#1F3A5F] text-white";
+                    btn.className = "h-8 px-3 rounded-[4px] bg-[#1F3A5F] text-white flex-shrink-0";
                 } else {
-                    btn.className = "h-8 px-3 rounded-[4px] bg-[#F7F8FA] border border-[#E2E8F0] text-[#4A5568] hover:bg-[#EDF2F7]";
+                    btn.className = "h-8 px-3 rounded-[4px] bg-[#F7F8FA] border border-[#E2E8F0] text-[#4A5568] hover:bg-[#EDF2F7] flex-shrink-0";
                 }
             });
             renderMyRegs();
@@ -879,6 +911,8 @@
 
         function renderMyRegs() {
             const tbody = document.getElementById("my-regs-tbody");
+            const mobileContainer = document.getElementById("my-regs-mobile");
+
             const userRegs = registrations.filter(r => {
                 if (r.user !== CURRENT_USER) return false;
                 if (myRegFilter !== "all" && r.status !== myRegFilter) return false;
@@ -889,16 +923,17 @@
             document.getElementById("badge-my-regs-count").textContent = activeCount;
 
             if (userRegs.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="py-8 text-center text-sm text-[#718096]">
-                            No reservations found for the selected filter.
-                        </td>
-                    </tr>
+                const emptyMsg = `
+                    <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-8 text-center text-sm text-[#718096]">
+                        No reservations found for the selected filter.
+                    </div>
                 `;
+                tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-sm text-[#718096]">No reservations found for the selected filter.</td></tr>`;
+                mobileContainer.innerHTML = emptyMsg;
                 return;
             }
 
+            // Render Desktop Table
             tbody.innerHTML = userRegs.map(reg => {
                 const ev = events.find(e => e.id === reg.event_id) || { title: "Unknown Event", venue: "—", fee: 0, event_date: "2026-01-01" };
                 const isRegistered = reg.status === "registered";
@@ -928,10 +963,61 @@
                     </tr>
                 `;
             }).join("");
+
+            // Render Mobile Stacked Cards
+            mobileContainer.innerHTML = userRegs.map(reg => {
+                const ev = events.find(e => e.id === reg.event_id) || { title: "Unknown Event", venue: "—", fee: 0, event_date: "2026-01-01", category: "Technical" };
+                const isRegistered = reg.status === "registered";
+
+                return `
+                    <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 space-y-3 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center space-x-1.5 text-xs text-[#718096]">
+                                <span class="w-1.5 h-1.5 rounded-full inline-block" style="background-color: ${CATEGORY_COLORS[ev.category] || '#718096'};"></span>
+                                <span>${ev.category}</span>
+                            </div>
+                            <span class="badge ${isRegistered ? 'badge-registered' : 'badge-cancelled'}">
+                                ${isRegistered ? 'Registered' : 'Cancelled'}
+                            </span>
+                        </div>
+
+                        <h3 class="font-serif text-base font-semibold text-[#1A202C]">
+                            ${ev.title}
+                        </h3>
+
+                        <dl class="grid grid-cols-2 gap-2 text-xs text-[#4A5568] pt-2 border-t border-[#EDF2F7]">
+                            <div>
+                                <dt class="text-[#718096]">Date</dt>
+                                <dd class="font-medium text-[#1A202C] tabular-nums mt-0.5">${formatDate(ev.event_date)}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-[#718096]">Fee</dt>
+                                <dd class="font-medium text-[#1A202C] tabular-nums mt-0.5">${formatFee(ev.fee)}</dd>
+                            </div>
+                            <div class="col-span-2">
+                                <dt class="text-[#718096]">Venue</dt>
+                                <dd class="font-medium text-[#1A202C] mt-0.5 truncate">${ev.venue}</dd>
+                            </div>
+                        </dl>
+
+                        <div class="pt-2 border-t border-[#EDF2F7]">
+                            ${isRegistered ? `
+                                <button onclick="cancelRegistration(${reg.id})" class="w-full h-10 text-xs font-semibold text-[#9B1C1C] bg-white border border-[#FED7D7] hover:bg-[#FDECEC] rounded-[4px] transition-colors">
+                                    Cancel registration
+                                </button>
+                            ` : `
+                                <button onclick="reactivateRegistration(${reg.id})" class="w-full h-10 text-xs font-semibold text-white bg-[#1F3A5F] hover:bg-[#162B47] rounded-[4px] transition-colors">
+                                    Reactivate pass
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join("");
         }
 
         // =============================================================
-        // RENDER: ADMIN VIEWS
+        // RENDER: ADMIN VIEWS (Desktop table + Mobile cards)
         // =============================================================
 
         function renderAdminOverview() {
@@ -949,9 +1035,9 @@
                 const pct = Math.min(100, Math.round((ev.registered_count / ev.capacity) * 100));
                 return `
                     <div>
-                        <div class="flex items-center justify-between text-xs mb-1">
-                            <span class="font-medium text-[#1A202C]">${ev.title}</span>
-                            <span class="text-[#718096] tabular-nums">${ev.registered_count} / ${ev.capacity} (${pct}%)</span>
+                        <div class="flex items-center justify-between text-xs mb-1 gap-2">
+                            <span class="font-medium text-[#1A202C] truncate">${ev.title}</span>
+                            <span class="text-[#718096] tabular-nums flex-shrink-0">${ev.registered_count} / ${ev.capacity} (${pct}%)</span>
                         </div>
                         <div class="w-full bg-[#EDF2F7] rounded-full h-2 overflow-hidden">
                             <div class="bg-[#1F3A5F] h-2 rounded-full" style="width: ${pct}%;"></div>
@@ -963,6 +1049,9 @@
 
         function renderAdminEvents() {
             const tbody = document.getElementById("admin-events-tbody");
+            const mobileContainer = document.getElementById("admin-events-mobile");
+
+            // Desktop Table
             tbody.innerHTML = events.map(ev => {
                 return `
                     <tr class="hover:bg-[#F7F8FA] transition-colors">
@@ -977,11 +1066,47 @@
                             ${ev.registered_count} / ${ev.capacity}
                         </td>
                         <td class="py-3.5 px-4 text-right whitespace-nowrap">
-                            <button onclick="adminDeleteEvent(${ev.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline">
+                            <button onclick="adminDeleteEvent(${ev.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline p-1">
                                 Delete
                             </button>
                         </td>
                     </tr>
+                `;
+            }).join("");
+
+            // Mobile Cards
+            mobileContainer.innerHTML = events.map(ev => {
+                return `
+                    <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 space-y-2.5 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <h3 class="font-serif text-base font-semibold text-[#1A202C]">${ev.title}</h3>
+                                <div class="text-xs text-[#718096] mt-0.5">${ev.category} &middot; ${formatDate(ev.event_date)}</div>
+                            </div>
+                            <button onclick="adminDeleteEvent(${ev.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline p-1 flex-shrink-0">
+                                Delete
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-[#EDF2F7]">
+                            <div>
+                                <span class="text-[#718096]">Venue:</span>
+                                <span class="font-medium text-[#1A202C] ml-1">${ev.venue}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[#718096]">Fee:</span>
+                                <span class="font-medium text-[#1A202C] ml-1 tabular-nums">${formatFee(ev.fee)}</span>
+                            </div>
+                        </div>
+                        <div class="text-xs pt-1">
+                            <div class="flex justify-between text-[#718096] mb-1">
+                                <span>Seats filled</span>
+                                <span class="tabular-nums font-medium text-[#1A202C]">${ev.registered_count} / ${ev.capacity}</span>
+                            </div>
+                            <div class="w-full bg-[#EDF2F7] rounded-full h-1.5 overflow-hidden">
+                                <div class="bg-[#1F3A5F] h-1.5 rounded-full" style="width: ${Math.round((ev.registered_count / ev.capacity) * 100)}%;"></div>
+                            </div>
+                        </div>
+                    </div>
                 `;
             }).join("");
         }
@@ -1028,6 +1153,9 @@
 
         function renderAdminStudents() {
             const tbody = document.getElementById("admin-students-tbody");
+            const mobileContainer = document.getElementById("admin-students-mobile");
+
+            // Desktop Table
             tbody.innerHTML = DEFAULT_STUDENTS.map(st => {
                 const count = registrations.filter(r => r.user === st.name && r.status === "registered").length;
                 return `
@@ -1038,6 +1166,30 @@
                         <td class="py-3.5 px-4 text-[#4A5568]">${st.email}</td>
                         <td class="py-3.5 px-4 text-right tabular-nums text-[#4A5568]">${count}</td>
                     </tr>
+                `;
+            }).join("");
+
+            // Mobile Cards
+            mobileContainer.innerHTML = DEFAULT_STUDENTS.map(st => {
+                const count = registrations.filter(r => r.user === st.name && r.status === "registered").length;
+                const initials = st.name.split(" ").map(w => w[0]).join("").toUpperCase();
+                return `
+                    <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 flex items-center justify-between shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                        <div class="flex items-center space-x-3 min-w-0 pr-2">
+                            <div class="w-9 h-9 rounded-full bg-[#E0E7FF] text-[#1F3A5F] font-bold text-xs flex items-center justify-center flex-shrink-0">
+                                ${initials}
+                            </div>
+                            <div class="min-w-0">
+                                <div class="font-medium text-sm text-[#1A202C] truncate">${st.name}</div>
+                                <div class="text-xs text-[#718096] truncate">${st.roll} &middot; ${st.dept}</div>
+                            </div>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <span class="text-xs font-semibold px-2 py-1 bg-[#EDF2F7] text-[#1F3A5F] rounded-[4px] tabular-nums">
+                                ${count} pass${count === 1 ? '' : 'es'}
+                            </span>
+                        </div>
+                    </div>
                 `;
             }).join("");
         }
