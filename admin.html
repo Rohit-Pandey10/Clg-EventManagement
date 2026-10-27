@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Organizer Dashboard &middot; College Event Management System</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%231F3A5F'/><text x='16' y='22' font-family='Georgia, serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>C</text></svg>">
+
+    <!-- Route Guard: checks session and enforces admin role -->
+    <script src="auth.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    screens: { 'xs': '420px' },
+                    colors: {
+                        primary: '#1F3A5F',
+                        primaryHover: '#162B47',
+                        page: '#F7F8FA',
+                        surface: '#FFFFFF',
+                        textPrimary: '#1A202C',
+                        textSecondary: '#4A5568',
+                        textMuted: '#718096',
+                        borderColor: '#E2E8F0',
+                        borderInput: '#CBD5E0',
+                    },
+                    fontFamily: {
+                        serif: ['"Source Serif 4"', 'Georgia', 'serif'],
+                        sans: ['"Source Sans 3"', 'system-ui', '-apple-system', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: "Source Sans 3", system-ui, sans-serif; }
+        .font-serif { font-family: "Source Serif 4", Georgia, serif; }
+        .tabular-nums { font-variant-numeric: tabular-nums; }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            height: 22px;
+            padding: 0 8px;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1;
+            border-radius: 4px;
+        }
+        .badge-registered { background-color: #E6F4EA; color: #276749; border: 1px solid #C6F6D5; }
+        .badge-cancelled { background-color: #FDECEC; color: #9B1C1C; border: 1px solid #FED7D7; }
+        .badge-neutral { background-color: #EDF2F7; color: #4A5568; border: 1px solid #E2E8F0; }
+
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+
+        @media screen and (max-width: 640px) {
+            input, select { font-size: 16px !important; }
+        }
+    </style>
+</head>
+<body class="min-h-full flex flex-col bg-[#F7F8FA] text-[#1A202C] antialiased">
+
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-[#E2E8F0] sticky top-0 z-40">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-14 sm:h-16 gap-3">
+                <!-- Wordmark -->
+                <div class="flex items-center space-x-2 min-w-0">
+                    <a href="admin.html" class="font-serif text-base sm:text-lg font-semibold text-[#1A202C] hover:text-[#1F3A5F] transition-colors truncate">
+                        <span class="xs:hidden">CEMS Admin</span>
+                        <span class="hidden xs:inline sm:hidden">CEMS Organizer</span>
+                        <span class="hidden sm:inline">College Event Management System</span>
+                    </a>
+                </div>
+
+                <!-- User identity and Sign out (NO portal switcher!) -->
+                <div class="flex items-center space-x-3 sm:space-x-4 flex-shrink-0">
+                    <div class="flex items-center space-x-2">
+                        <span id="user-avatar" class="w-8 h-8 rounded-full bg-[#E0E7FF] text-[#1F3A5F] flex items-center justify-center font-bold text-xs tabular-nums flex-shrink-0">
+                            AD
+                        </span>
+                        <div class="hidden sm:block text-left text-xs">
+                            <div id="user-display-name" class="font-semibold text-[#1A202C]">System Administrator</div>
+                            <div class="text-[#718096]">Administrator &middot; Organizer</div>
+                        </div>
+                    </div>
+                    <button onclick="signOut()" class="text-xs font-semibold text-[#9B1C1C] hover:underline px-2 py-1 rounded-[4px] border border-transparent hover:border-[#FED7D7] transition-colors">
+                        Sign out
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin-Only Sub-Navigation -->
+        <nav class="border-t border-[#EDF2F7] bg-white" aria-label="Admin Navigation">
+            <div class="max-w-[1200px] mx-auto px-4 sm:px-6 flex items-center space-x-6 text-sm overflow-x-auto whitespace-nowrap scrollbar-none">
+                <button onclick="switchTab('overview')" id="tab-btn-overview" class="py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5 flex-shrink-0">
+                    <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"></path></svg>
+                    <span>Overview</span>
+                </button>
+                <button onclick="switchTab('events')" id="tab-btn-events" class="py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0">
+                    <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"></path></svg>
+                    <span>Events Management</span>
+                </button>
+                <button onclick="switchTab('students')" id="tab-btn-students" class="py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0">
+                    <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"></path></svg>
+                    <span>Students</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Operational Alerts Region -->
+    <div id="alerts-container" class="max-w-[1200px] w-full mx-auto px-4 sm:px-6 pt-3 sm:pt-4 space-y-2" aria-live="polite"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-[1200px] w-full mx-auto px-4 sm:px-6 py-4 sm:py-6">
+
+        <!-- TAB 1: OVERVIEW -->
+        <section id="view-overview" class="space-y-5 sm:space-y-6">
+            <div class="border-b border-[#E2E8F0] pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
+                <div>
+                    <h1 class="font-serif text-xl sm:text-2xl font-semibold text-[#1A202C] tracking-tight">Dashboard Overview</h1>
+                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Operational metrics, event scheduling, and registration summary.</p>
+                </div>
+                <div class="flex items-center space-x-3 self-start sm:self-auto">
+                    <button onclick="switchTab('events')" class="h-9 px-3.5 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-xs font-semibold rounded-[4px] transition-colors">
+                        Manage Events
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stat Strip (2 cols on mobile, 4 on desktop) -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-3.5 sm:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                    <div class="text-xs sm:text-[13px] font-medium text-[#718096]">Total events</div>
+                    <div id="stat-total-events" class="text-2xl sm:text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">0</div>
+                    <div class="text-[11px] sm:text-xs text-[#718096] mt-1">All time created</div>
+                </div>
+                <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-3.5 sm:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                    <div class="text-xs sm:text-[13px] font-medium text-[#718096]">Students</div>
+                    <div id="stat-total-students" class="text-2xl sm:text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">4</div>
+                    <div class="text-[11px] sm:text-xs text-[#718096] mt-1">Registered accounts</div>
+                </div>
+                <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-3.5 sm:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                    <div class="text-xs sm:text-[13px] font-medium text-[#718096]">Active registrations</div>
+                    <div id="stat-active-regs" class="text-2xl sm:text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">0</div>
+                    <div class="text-[11px] sm:text-xs text-[#718096] mt-1">Confirmed seats</div>
+                </div>
+                <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-3.5 sm:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                    <div class="text-xs sm:text-[13px] font-medium text-[#718096]">Upcoming events</div>
+                    <div id="stat-upcoming-events" class="text-2xl sm:text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">0</div>
+                    <div class="text-[11px] sm:text-xs text-[#718096] mt-1">Active schedules</div>
+                </div>
+            </div>
+
+            <!-- Popularity list -->
+            <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 sm:p-5 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                <h2 class="font-serif text-base font-semibold text-[#1A202C] mb-3.5">Seat Attendance by Event</h2>
+                <div id="admin-popularity-list" class="space-y-3.5 sm:space-y-4"></div>
+            </div>
+        </section>
+
+        <!-- TAB 2: EVENTS MANAGEMENT -->
+        <section id="view-events" class="hidden space-y-5 sm:space-y-6">
+            <div class="border-b border-[#E2E8F0] pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
+                <div>
+                    <h1 class="font-serif text-xl sm:text-2xl font-semibold text-[#1A202C] tracking-tight">Events Management</h1>
+                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Add, monitor, or remove campus events and observe capacities.</p>
+                </div>
+                <button onclick="promptCreateEvent()" class="h-9 px-3.5 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-xs font-semibold rounded-[4px] transition-colors self-start sm:self-auto">
+                    + Create new event
+                </button>
+            </div>
+
+            <!-- Desktop Table (>= 768px) -->
+            <div class="hidden md:block bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm" role="table">
+                        <thead class="bg-[#F7F8FA] border-b border-[#E2E8F0] text-[13px] font-semibold text-[#4A5568]">
+                            <tr>
+                                <th class="py-3 px-4">Title &amp; Category</th>
+                                <th class="py-3 px-4">Date</th>
+                                <th class="py-3 px-4">Venue</th>
+                                <th class="py-3 px-4 text-right">Fee</th>
+                                <th class="py-3 px-4 text-right">Capacity</th>
+                                <th class="py-3 px-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-events-tbody" class="divide-y divide-[#EDF2F7]"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mobile Stacked Cards (< 768px) -->
+            <div id="admin-events-mobile" class="md:hidden space-y-3"></div>
+        </section>
+
+        <!-- TAB 3: STUDENTS DIRECTORY -->
+        <section id="view-students" class="hidden space-y-5 sm:space-y-6">
+            <div class="border-b border-[#E2E8F0] pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
+                <div>
+                    <h1 class="font-serif text-xl sm:text-2xl font-semibold text-[#1A202C] tracking-tight">Students Directory</h1>
+                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Directory of registered students, roll numbers, and academic departments.</p>
+                </div>
+            </div>
+
+            <!-- Desktop Table (>= 768px) -->
+            <div class="hidden md:block bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm" role="table">
+                        <thead class="bg-[#F7F8FA] border-b border-[#E2E8F0] text-[13px] font-semibold text-[#4A5568]">
+                            <tr>
+                                <th class="py-3 px-4">Student</th>
+                                <th class="py-3 px-4">Roll number</th>
+                                <th class="py-3 px-4">Department</th>
+                                <th class="py-3 px-4">Email</th>
+                                <th class="py-3 px-4 text-right">Active passes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-students-tbody" class="divide-y divide-[#EDF2F7]"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mobile Stacked Cards (< 768px) -->
+            <div id="admin-students-mobile" class="md:hidden space-y-3"></div>
+        </section>
+
+    </main>
+
+    <!-- Institutional Footer with Demo Line -->
+    <footer class="mt-auto border-t border-[#E2E8F0] bg-white">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between text-xs text-[#718096] gap-2 text-center sm:text-left">
+            <div>College Event Management System &middot; Academic Year 2026</div>
+            <div>Demo build. Data is sample data and is not saved on a server.</div>
+        </div>
+    </footer>
+
+    <!-- Interactive Client-side Script -->
+    <script>
+        const STORAGE_KEY_EVENTS = "cems_events_v1";
+        const STORAGE_KEY_REGS = "cems_registrations_v1";
+
+        const DEFAULT_STUDENTS = [
+            { name: "Alice Sharma", roll: "CS2026-001", dept: "Computer Engineering", email: "alice@college.edu" },
+            { name: "Bob Patel", roll: "IT2026-014", dept: "Information Technology", email: "bob@college.edu" },
+            { name: "Charlie Gupta", roll: "AI2026-022", dept: "Artificial Intelligence & Data Science", email: "charlie@college.edu" },
+            { name: "Diana Dsouza", roll: "EXTC2026-035", dept: "Electronics & Telecommunication", email: "diana@college.edu" }
+        ];
+
+        function getInitialEvents() {
+            const today = new Date();
+            const addDays = (d, n) => {
+                const copy = new Date(d);
+                copy.setDate(copy.getDate() + n);
+                return copy.toISOString().split("T")[0];
+            };
+
+            return [
+                {
+                    id: 1,
+                    title: "AI & Machine Learning 24h Hackathon",
+                    category: "Technical",
+                    event_date: addDays(today, 10),
+                    venue: "Main Turing Auditorium & Lab 401",
+                    description: "24-hour flagship hackathon solving real-world challenges in GenAI, autonomous systems, and edge computing.",
+                    fee: 0,
+                    capacity: 60,
+                    registered_count: 52
+                },
+                {
+                    id: 2,
+                    title: "Aura 2026: Annual Cultural Fiesta",
+                    category: "Cultural",
+                    event_date: addDays(today, 18),
+                    venue: "Open Air Amphitheatre",
+                    description: "The campus's biggest cultural extravaganza featuring music battles, classical and modern dance competitions.",
+                    fee: 150,
+                    capacity: 150,
+                    registered_count: 114
+                },
+                {
+                    id: 3,
+                    title: "Inter-College 7-a-Side Football Cup",
+                    category: "Sports",
+                    event_date: addDays(today, 25),
+                    venue: "University Sports Complex Turf",
+                    description: "High-octane knockouts with teams from across state colleges. Official referees, trophies, and cash prizes.",
+                    fee: 50,
+                    capacity: 80,
+                    registered_count: 68
+                },
+                {
+                    id: 4,
+                    title: "Cloud Native & DevOps Hands-on Bootcamp",
+                    category: "Workshop",
+                    event_date: addDays(today, 14),
+                    venue: "Seminar Hall B & Hybrid Live Stream",
+                    description: "Deep-dive workshop on Docker containers, Kubernetes orchestrations, Terraform, and GitHub Actions CI/CD pipelines.",
+                    fee: 99,
+                    capacity: 45,
+                    registered_count: 41
+                },
+                {
+                    id: 5,
+                    title: "Big Tech Career & System Design Seminar",
+                    category: "Seminar",
+                    event_date: addDays(today, 32),
+                    venue: "Executive Conference Hall 1",
+                    description: "Alumni keynote speakers from Google, Microsoft, and Uber discussing technical interviews and scalable system design.",
+                    fee: 0,
+                    capacity: 120,
+                    registered_count: 95
+                },
+                {
+                    id: 6,
+                    title: "Autonomous Drone & Robotics Expo",
+                    category: "Workshop",
+                    event_date: addDays(today, -20),
+                    venue: "Robotics Lab & Indoor Field",
+                    description: "Hands-on flight controller programming and autonomous navigation demo. Successfully concluded.",
+                    fee: 120,
+                    capacity: 40,
+                    registered_count: 40
+                }
+            ];
+        }
+
+        let events = [];
+        let registrations = [];
+
+        function loadState() {
+            try {
+                const savedEvents = localStorage.getItem(STORAGE_KEY_EVENTS);
+                events = savedEvents ? JSON.parse(savedEvents) : getInitialEvents();
+                const savedRegs = localStorage.getItem(STORAGE_KEY_REGS);
+                registrations = savedRegs ? JSON.parse(savedRegs) : [];
+            } catch (e) {
+                events = getInitialEvents();
+                registrations = [];
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY_EVENTS, JSON.stringify(events));
+            localStorage.setItem(STORAGE_KEY_REGS, JSON.stringify(registrations));
+        }
+
+        function showAlert(msg, type = "success") {
+            const container = document.getElementById("alerts-container");
+            const alert = document.createElement("div");
+            const isSuccess = type === "success";
+            alert.className = `flex items-start justify-between p-3 rounded-[4px] border text-xs sm:text-sm transition-opacity duration-200 ${
+                isSuccess ? "bg-[#E6F4EA] border-[#C6F6D5] text-[#276749]" : "bg-[#FDECEC] border-[#FED7D7] text-[#9B1C1C]"
+            }`;
+            alert.innerHTML = `
+                <div class="pr-2 leading-relaxed font-medium">${msg}</div>
+                <button type="button" onclick="this.parentElement.remove()" class="text-current hover:opacity-75 ml-2 text-base leading-none font-bold">&times;</button>
+            `;
+            container.appendChild(alert);
+            setTimeout(() => {
+                alert.style.opacity = "0";
+                setTimeout(() => alert.remove(), 200);
+            }, 4000);
+        }
+
+        function isPast(dateStr) {
+            return new Date(dateStr) < new Date(new Date().toDateString());
+        }
+
+        function formatFee(fee) {
+            return Number(fee) === 0 ? "Free" : `₹${Math.round(fee)}`;
+        }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        function switchTab(tab) {
+            ["overview", "events", "students"].forEach(t => {
+                const el = document.getElementById(`view-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tab) {
+                    el.classList.remove("hidden");
+                    btn.className = "py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5 flex-shrink-0";
+                } else {
+                    btn.className = "py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0";
+                }
+            });
+
+            if (tab === "overview") renderOverview();
+            if (tab === "events") renderEvents();
+            if (tab === "students") renderStudents();
+        }
+
+        function renderOverview() {
+            document.getElementById("stat-total-events").textContent = events.length;
+            document.getElementById("stat-total-students").textContent = DEFAULT_STUDENTS.length;
+
+            const activeRegs = events.reduce((sum, e) => sum + e.registered_count, 0);
+            document.getElementById("stat-active-regs").textContent = activeRegs;
+
+            const upcomingCount = events.filter(e => !isPast(e.event_date)).length;
+            document.getElementById("stat-upcoming-events").textContent = upcomingCount;
+
+            const popContainer = document.getElementById("admin-popularity-list");
+            popContainer.innerHTML = events.map(ev => {
+                const pct = Math.min(100, Math.round((ev.registered_count / ev.capacity) * 100));
+                return `
+                    <div>
+                        <div class="flex items-center justify-between text-xs mb-1 gap-2">
+                            <span class="font-medium text-[#1A202C] truncate">${ev.title}</span>
+                            <span class="text-[#718096] tabular-nums flex-shrink-0">${ev.registered_count} / ${ev.capacity} (${pct}%)</span>
+                        </div>
+                        <div class="w-full bg-[#EDF2F7] rounded-full h-2 overflow-hidden">
+                            <div class="bg-[#1F3A5F] h-2 rounded-full" style="width: ${pct}%;"></div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderEvents() {
+            const tbody = document.getElementById("admin-events-tbody");
+            const mobileContainer = document.getElementById("admin-events-mobile");
+
+            // Desktop Table
+            tbody.innerHTML = events.map(ev => {
+                return `
+                    <tr class="hover:bg-[#F7F8FA] transition-colors">
+                        <td class="py-3.5 px-4">
+                            <div class="font-medium text-[#1A202C]">${ev.title}</div>
+                            <div class="text-xs text-[#718096] mt-0.5">${ev.category}</div>
+                        </td>
+                        <td class="py-3.5 px-4 tabular-nums text-[#4A5568] whitespace-nowrap">${formatDate(ev.event_date)}</td>
+                        <td class="py-3.5 px-4 text-[#4A5568]">${ev.venue}</td>
+                        <td class="py-3.5 px-4 text-right tabular-nums text-[#4A5568] whitespace-nowrap">${formatFee(ev.fee)}</td>
+                        <td class="py-3.5 px-4 text-right tabular-nums text-[#4A5568] whitespace-nowrap">
+                            ${ev.registered_count} / ${ev.capacity}
+                        </td>
+                        <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                            <button onclick="adminDeleteEvent(${ev.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline p-1">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+
+            // Mobile Cards
+            mobileContainer.innerHTML = events.map(ev => {
+                return `
+                    <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 space-y-2.5 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <h3 class="font-serif text-base font-semibold text-[#1A202C]">${ev.title}</h3>
+                                <div class="text-xs text-[#718096] mt-0.5">${ev.category} &middot; ${formatDate(ev.event_date)}</div>
+                            </div>
+                            <button onclick="adminDeleteEvent(${ev.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline p-1 flex-shrink-0">
+                                Delete
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-[#EDF2F7]">
+                            <div>
+                                <span class="text-[#718096]">Venue:</span>
+                                <span class="font-medium text-[#1A202C] ml-1">${ev.venue}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-[#718096]">Fee:</span>
+                                <span class="font-medium text-[#1A202C] ml-1 tabular-nums">${formatFee(ev.fee)}</span>
+                            </div>
+                        </div>
+                        <div class="text-xs pt-1">
+                            <div class="flex justify-between text-[#718096] mb-1">
+                                <span>Seats filled</span>
+                                <span class="tabular-nums font-medium text-[#1A202C]">${ev.registered_count} / ${ev.capacity}</span>
+                            </div>
+                            <div class="w-full bg-[#EDF2F7] rounded-full h-1.5 overflow-hidden">
+                                <div class="bg-[#1F3A5F] h-1.5 rounded-full" style="width: ${Math.round((ev.registered_count / ev.capacity) * 100)}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function adminDeleteEvent(id) {
+            const ev = events.find(e => e.id === id);
+            if (!ev) return;
+            if (ev.registered_count > 0) {
+                alert(`Cannot delete '${ev.title}' because it has ${ev.registered_count} active registration(s).`);
+                return;
+            }
+            if (confirm(`Delete event '${ev.title}'?`)) {
+                events = events.filter(e => e.id !== id);
+                saveState();
+                showAlert(`Event '${ev.title}' deleted.`);
+                renderEvents();
+                renderOverview();
+            }
+        }
+
+        function promptCreateEvent() {
+            const title = prompt("Enter event title:");
+            if (!title) return;
+            const category = prompt("Enter category (Technical, Cultural, Sports, Workshop, Seminar):", "Technical") || "Technical";
+            const venue = prompt("Enter venue:", "Main Campus Auditorium") || "Campus Hall";
+            const capacity = parseInt(prompt("Enter capacity (seats):", "60"), 10) || 50;
+
+            const newEvent = {
+                id: Date.now(),
+                title,
+                category,
+                event_date: new Date(Date.now() + 7 * 86400000).toISOString().split("T")[0],
+                venue,
+                description: "Campus organized event for student participation.",
+                fee: 0,
+                capacity,
+                registered_count: 0
+            };
+
+            events.unshift(newEvent);
+            saveState();
+            showAlert(`Created new event '${title}'.`);
+            renderEvents();
+            renderOverview();
+        }
+
+        function renderStudents() {
+            const tbody = document.getElementById("admin-students-tbody");
+            const mobileContainer = document.getElementById("admin-students-mobile");
+
+            // Desktop Table
+            tbody.innerHTML = DEFAULT_STUDENTS.map(st => {
+                const count = registrations.filter(r => r.user === st.name && r.status === "registered").length;
+                return `
+                    <tr class="hover:bg-[#F7F8FA] transition-colors">
+                        <td class="py-3.5 px-4 font-medium text-[#1A202C]">${st.name}</td>
+                        <td class="py-3.5 px-4 tabular-nums text-[#4A5568]">${st.roll}</td>
+                        <td class="py-3.5 px-4 text-[#4A5568]">${st.dept}</td>
+                        <td class="py-3.5 px-4 text-[#4A5568]">${st.email}</td>
+                        <td class="py-3.5 px-4 text-right tabular-nums text-[#4A5568]">${count}</td>
+                    </tr>
+                `;
+            }).join("");
+
+            // Mobile Cards
+            mobileContainer.innerHTML = DEFAULT_STUDENTS.map(st => {
+                const count = registrations.filter(r => r.user === st.name && r.status === "registered").length;
+                const initials = st.name.split(" ").map(w => w[0]).join("").toUpperCase();
+                return `
+                    <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 flex items-center justify-between shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                        <div class="flex items-center space-x-3 min-w-0 pr-2">
+                            <div class="w-9 h-9 rounded-full bg-[#E0E7FF] text-[#1F3A5F] font-bold text-xs flex items-center justify-center flex-shrink-0">
+                                ${initials}
+                            </div>
+                            <div class="min-w-0">
+                                <div class="font-medium text-sm text-[#1A202C] truncate">${st.name}</div>
+                                <div class="text-xs text-[#718096] truncate">${st.roll} &middot; ${st.dept}</div>
+                            </div>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <span class="text-xs font-semibold px-2 py-1 bg-[#EDF2F7] text-[#1F3A5F] rounded-[4px] tabular-nums">
+                                ${count} pass${count === 1 ? '' : 'es'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        // Initialize user header info and data
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = getCurrentUser();
+            if (user) {
+                const nameEl = document.getElementById("user-display-name");
+                if (nameEl) nameEl.textContent = user.name || user.username;
+            }
+            loadState();
+            renderOverview();
+            renderEvents();
+            renderStudents();
+        });
+    </script>
+</body>
+</html>

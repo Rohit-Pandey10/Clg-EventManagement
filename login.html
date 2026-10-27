@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Sign in &middot; College Event Management System</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%231F3A5F'/><text x='16' y='22' font-family='Georgia, serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>C</text></svg>">
+
+    <!-- Route Guard -->
+    <script src="auth.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1F3A5F',
+                        primaryHover: '#162B47',
+                        page: '#F7F8FA',
+                        surface: '#FFFFFF',
+                        textPrimary: '#1A202C',
+                        textSecondary: '#4A5568',
+                        textMuted: '#718096',
+                        borderColor: '#E2E8F0',
+                        borderInput: '#CBD5E0',
+                    },
+                    fontFamily: {
+                        serif: ['"Source Serif 4"', 'Georgia', 'serif'],
+                        sans: ['"Source Sans 3"', 'system-ui', '-apple-system', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: "Source Sans 3", system-ui, sans-serif; }
+        .font-serif { font-family: "Source Serif 4", Georgia, serif; }
+        @media screen and (max-width: 640px) {
+            input { font-size: 16px !important; }
+        }
+    </style>
+</head>
+<body class="min-h-full flex flex-col bg-[#F7F8FA] text-[#1A202C] antialiased">
+
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-[#E2E8F0]">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-14 sm:h-16">
+                <span class="font-serif text-base sm:text-lg font-semibold text-[#1A202C]">
+                    College Event Management System
+                </span>
+                <a href="https://github.com/Rohit-Pandey10/Clg-EvenetManagement" target="_blank" rel="noopener noreferrer" class="text-xs text-[#1F3A5F] hover:underline font-medium">
+                    GitHub Repo &rarr;
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Centered Sign In Card -->
+    <main class="flex-1 flex items-center justify-center px-4 py-8 sm:py-12">
+        <div class="w-full max-w-[820px] bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden grid grid-cols-1 md:grid-cols-2 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+
+            <!-- Left Panel: Institutional Summary (Desktop only) -->
+            <div class="bg-[#1F3A5F] text-white p-8 flex flex-col justify-between hidden md:flex">
+                <div>
+                    <span class="text-xs font-semibold tracking-wider uppercase text-[#C7D2FE]">Institutional Portal</span>
+                    <h1 class="font-serif text-2xl font-bold mt-2 leading-snug">
+                        College Event Management System
+                    </h1>
+                    <p class="text-sm text-[#C7D2FE] mt-2">
+                        A unified platform for academic, technical, cultural, and sports activities.
+                    </p>
+
+                    <ul class="mt-8 space-y-4 text-sm text-[#E2E8F0]">
+                        <li class="flex items-start space-x-2.5">
+                            <svg class="w-4 h-4 text-[#C7D2FE] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path></svg>
+                            <span>Browse upcoming campus hackathons, fests, and workshops.</span>
+                        </li>
+                        <li class="flex items-start space-x-2.5">
+                            <svg class="w-4 h-4 text-[#C7D2FE] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path></svg>
+                            <span>Reserve seats with real-time seat availability tracking.</span>
+                        </li>
+                        <li class="flex items-start space-x-2.5">
+                            <svg class="w-4 h-4 text-[#C7D2FE] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path></svg>
+                            <span>Role-based access control for students and administrators.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="text-xs text-[#94A3B8] pt-6 border-t border-[#334E68]">
+                    Department of Computer Engineering &middot; 2026
+                </div>
+            </div>
+
+            <!-- Right Panel: Sign-In Form -->
+            <div class="p-6 sm:p-8 flex flex-col justify-center">
+                <h2 class="font-serif text-2xl font-semibold text-[#1A202C] mb-1">
+                    Sign in
+                </h2>
+                <p class="text-sm text-[#718096] mb-5">
+                    Enter your credentials to access your dashboard.
+                </p>
+
+                <!-- Inline Error Alert -->
+                <div id="login-error" class="hidden mb-4 p-3 rounded-[4px] bg-[#FDECEC] border border-[#FED7D7] text-[#9B1C1C] text-xs font-medium leading-relaxed"></div>
+
+                <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label for="login-username" class="block text-sm font-semibold text-[#1A202C] mb-1">
+                            Username
+                        </label>
+                        <input type="text" id="login-username" required autofocus autocomplete="username"
+                               class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] placeholder-[#718096] focus:outline-none focus:border-[#1F3A5F] focus:ring-1 focus:ring-[#1F3A5F] transition-colors"
+                               placeholder="Enter username">
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label for="login-password" class="block text-sm font-semibold text-[#1A202C]">
+                                Password
+                            </label>
+                            <button type="button" id="toggle-pw-btn" onclick="togglePassword()" class="text-xs text-[#718096] hover:text-[#1A202C] focus:outline-none">
+                                Show
+                            </button>
+                        </div>
+                        <input type="password" id="login-password" required autocomplete="current-password"
+                               class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] placeholder-[#718096] focus:outline-none focus:border-[#1F3A5F] focus:ring-1 focus:ring-[#1F3A5F] transition-colors"
+                               placeholder="Enter password">
+                    </div>
+
+                    <button type="submit"
+                            class="w-full h-10 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-sm font-semibold rounded-[4px] transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#1F3A5F] focus:ring-offset-1">
+                        Sign in
+                    </button>
+                </form>
+
+                <!-- Demo Credentials Note -->
+                <div class="mt-6 pt-4 border-t border-[#EDF2F7] bg-[#F7F8FA] p-3 rounded-[4px] border border-[#E2E8F0] text-xs text-[#718096]">
+                    <div class="font-semibold text-[#1A202C] mb-1.5 flex items-center justify-between">
+                        <span>Demo credentials:</span>
+                        <span class="text-[11px] font-normal text-[#718096]">(Click to fill)</span>
+                    </div>
+                    <div class="space-y-1 text-xs">
+                        <button type="button" onclick="fillCreds('admin', 'admin123')" class="w-full text-left py-1 px-1.5 hover:bg-[#EDF2F7] rounded-[3px] transition-colors flex items-center justify-between">
+                            <span><strong class="text-[#1F3A5F]">admin</strong> / admin123</span>
+                            <span class="text-[11px] font-medium text-[#4A5568] bg-white px-1.5 py-0.5 rounded border border-[#E2E8F0]">Admin</span>
+                        </button>
+                        <button type="button" onclick="fillCreds('alice', 'password123')" class="w-full text-left py-1 px-1.5 hover:bg-[#EDF2F7] rounded-[3px] transition-colors flex items-center justify-between">
+                            <span><strong class="text-[#1F3A5F]">alice</strong> / password123</span>
+                            <span class="text-[11px] font-medium text-[#4A5568] bg-white px-1.5 py-0.5 rounded border border-[#E2E8F0]">Student</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Institutional Footer -->
+    <footer class="mt-auto border-t border-[#E2E8F0] bg-white">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between text-xs text-[#718096] gap-2 text-center sm:text-left">
+            <div>College Event Management System &middot; Academic Year 2026</div>
+            <div>Demo build. Data is sample data and is not saved on a server.</div>
+        </div>
+    </footer>
+
+    <script>
+        // Demo credentials database
+        const DEMO_USERS = {
+            "admin": {
+                password: "admin123",
+                role: "admin",
+                name: "System Administrator",
+                department: "Administration"
+            },
+            "alice": {
+                password: "password123",
+                role: "student",
+                name: "Alice Sharma",
+                roll_no: "CS2026-001",
+                department: "Computer Engineering"
+            }
+        };
+
+        function fillCreds(u, p) {
+            document.getElementById("login-username").value = u;
+            document.getElementById("login-password").value = p;
+            document.getElementById("login-error").classList.add("hidden");
+        }
+
+        function togglePassword() {
+            const input = document.getElementById("login-password");
+            const btn = document.getElementById("toggle-pw-btn");
+            if (input.type === "password") {
+                input.type = "text";
+                btn.textContent = "Hide";
+            } else {
+                input.type = "password";
+                btn.textContent = "Show";
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById("login-username").value.trim().toLowerCase();
+            const passwordInput = document.getElementById("login-password").value;
+            const errEl = document.getElementById("login-error");
+
+            const account = DEMO_USERS[usernameInput];
+            if (!account || account.password !== passwordInput) {
+                errEl.textContent = "Invalid username or password. Please use the demo credentials below.";
+                errEl.classList.remove("hidden");
+                return;
+            }
+
+            // Save user session in sessionStorage
+            const sessionData = {
+                username: usernameInput,
+                role: account.role,
+                name: account.name,
+                roll_no: account.roll_no || "",
+                department: account.department || ""
+            };
+            sessionStorage.setItem("cems_user", JSON.stringify(sessionData));
+
+            // Redirect based on role
+            if (account.role === "admin") {
+                window.location.replace("admin.html");
+            } else {
+                window.location.replace("student.html");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Student Portal &middot; College Event Management System</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%231F3A5F'/><text x='16' y='22' font-family='Georgia, serif' font-size='18' font-weight='bold' fill='white' text-anchor='middle'>C</text></svg>">
+
+    <!-- Route Guard: checks session and enforces student role -->
+    <script src="auth.js"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    screens: { 'xs': '420px' },
+                    colors: {
+                        primary: '#1F3A5F',
+                        primaryHover: '#162B47',
+                        page: '#F7F8FA',
+                        surface: '#FFFFFF',
+                        textPrimary: '#1A202C',
+                        textSecondary: '#4A5568',
+                        textMuted: '#718096',
+                        borderColor: '#E2E8F0',
+                        borderInput: '#CBD5E0',
+                    },
+                    fontFamily: {
+                        serif: ['"Source Serif 4"', 'Georgia', 'serif'],
+                        sans: ['"Source Sans 3"', 'system-ui', '-apple-system', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: "Source Sans 3", system-ui, sans-serif; }
+        .font-serif { font-family: "Source Serif 4", Georgia, serif; }
+        .tabular-nums { font-variant-numeric: tabular-nums; }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            height: 22px;
+            padding: 0 8px;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1;
+            border-radius: 4px;
+        }
+        .badge-registered { background-color: #E6F4EA; color: #276749; border: 1px solid #C6F6D5; }
+        .badge-cancelled { background-color: #FDECEC; color: #9B1C1C; border: 1px solid #FED7D7; }
+        .badge-neutral { background-color: #EDF2F7; color: #4A5568; border: 1px solid #E2E8F0; }
+
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+
+        @media screen and (max-width: 640px) {
+            input, select { font-size: 16px !important; }
+        }
+    </style>
+</head>
+<body class="min-h-full flex flex-col bg-[#F7F8FA] text-[#1A202C] antialiased">
+
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-[#E2E8F0] sticky top-0 z-40">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-14 sm:h-16 gap-3">
+                <!-- Wordmark -->
+                <div class="flex items-center space-x-2 min-w-0">
+                    <a href="student.html" class="font-serif text-base sm:text-lg font-semibold text-[#1A202C] hover:text-[#1F3A5F] transition-colors truncate">
+                        <span class="xs:hidden">CEMS</span>
+                        <span class="hidden xs:inline sm:hidden">CEMS Events</span>
+                        <span class="hidden sm:inline">College Event Management System</span>
+                    </a>
+                </div>
+
+                <!-- User identity and Sign out (NO portal switcher!) -->
+                <div class="flex items-center space-x-3 sm:space-x-4 flex-shrink-0">
+                    <div class="flex items-center space-x-2">
+                        <span id="user-avatar" class="w-8 h-8 rounded-full bg-[#E0E7FF] text-[#1F3A5F] flex items-center justify-center font-bold text-xs tabular-nums flex-shrink-0">
+                            AS
+                        </span>
+                        <div class="hidden sm:block text-left text-xs">
+                            <div id="user-display-name" class="font-semibold text-[#1A202C]">Alice Sharma</div>
+                            <div id="user-display-info" class="text-[#718096]">Student &middot; CS2026-001</div>
+                        </div>
+                    </div>
+                    <button onclick="signOut()" class="text-xs font-semibold text-[#9B1C1C] hover:underline px-2 py-1 rounded-[4px] border border-transparent hover:border-[#FED7D7] transition-colors">
+                        Sign out
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student-Only Sub-Navigation -->
+        <nav class="border-t border-[#EDF2F7] bg-white" aria-label="Student Navigation">
+            <div class="max-w-[1200px] mx-auto px-4 sm:px-6 flex items-center space-x-6 text-sm overflow-x-auto whitespace-nowrap scrollbar-none">
+                <button onclick="switchTab('browse')" id="tab-btn-browse" class="py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5 flex-shrink-0">
+                    <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>Browse Events</span>
+                </button>
+                <button onclick="switchTab('my-regs')" id="tab-btn-my-regs" class="py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0">
+                    <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z"></path></svg>
+                    <span>My Registrations</span>
+                    <span id="badge-my-regs-count" class="ml-1 px-1.5 py-0.2 bg-[#EDF2F7] text-[#4A5568] text-xs rounded-full tabular-nums font-bold">2</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Operational Alerts Region -->
+    <div id="alerts-container" class="max-w-[1200px] w-full mx-auto px-4 sm:px-6 pt-3 sm:pt-4 space-y-2" aria-live="polite"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-[1200px] w-full mx-auto px-4 sm:px-6 py-4 sm:py-6">
+
+        <!-- TAB 1: BROWSE EVENTS -->
+        <section id="view-browse" class="space-y-5 sm:space-y-6">
+            <div class="border-b border-[#E2E8F0] pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 sm:gap-3">
+                <div>
+                    <h1 class="font-serif text-xl sm:text-2xl font-semibold text-[#1A202C] tracking-tight">Browse Campus Events</h1>
+                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Discover, filter, and register for workshops, competitions, and college fests.</p>
+                </div>
+                <div class="flex items-center space-x-2 pt-1 sm:pt-0">
+                    <button onclick="resetData()" class="text-xs text-[#718096] hover:text-[#1A202C] underline">
+                        Reset Demo Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters Toolbar -->
+            <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-3.5 sm:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)] space-y-3">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
+                    <div class="w-full sm:flex-1">
+                        <input id="search-input" type="text" oninput="renderBrowseEvents()" placeholder="Search by title, venue, or keywords..."
+                               class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] placeholder-[#718096] focus:outline-none focus:border-[#1F3A5F] focus:ring-1 focus:ring-[#1F3A5F] transition-colors">
+                    </div>
+                    <div class="w-full sm:w-48">
+                        <select id="sort-select" onchange="renderBrowseEvents()" class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] focus:outline-none focus:border-[#1F3A5F] focus:ring-1 focus:ring-[#1F3A5F] cursor-pointer">
+                            <option value="date">Date (upcoming)</option>
+                            <option value="fee">Fee (lowest)</option>
+                            <option value="capacity">Capacity (highest)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Category Segmented Chips -->
+                <div class="pt-2 border-t border-[#EDF2F7] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <div class="flex flex-wrap items-center gap-1.5" id="category-chips"></div>
+                    <div id="events-count-text" class="text-xs text-[#718096] tabular-nums self-end sm:self-center">0 events</div>
+                </div>
+            </div>
+
+            <!-- Events Grid -->
+            <div id="events-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
+        </section>
+
+        <!-- TAB 2: MY REGISTRATIONS -->
+        <section id="view-my-regs" class="hidden space-y-5 sm:space-y-6">
+            <div class="border-b border-[#E2E8F0] pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
+                <div>
+                    <h1 class="font-serif text-xl sm:text-2xl font-semibold text-[#1A202C] tracking-tight">My Registrations</h1>
+                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Review your confirmed event passes and cancellation history.</p>
+                </div>
+                <button onclick="switchTab('browse')" class="h-9 px-3.5 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-xs font-semibold rounded-[4px] transition-colors duration-150 inline-flex items-center self-start sm:self-auto">
+                    Browse more events &rarr;
+                </button>
+            </div>
+
+            <!-- Filter Pills -->
+            <div class="flex items-center space-x-2 text-xs font-semibold overflow-x-auto pb-1 scrollbar-none">
+                <button onclick="filterMyRegs('all')" id="pill-reg-all" class="h-8 px-3 rounded-[4px] bg-[#1F3A5F] text-white flex-shrink-0">All passes</button>
+                <button onclick="filterMyRegs('registered')" id="pill-reg-registered" class="h-8 px-3 rounded-[4px] bg-[#F7F8FA] border border-[#E2E8F0] text-[#4A5568] hover:bg-[#EDF2F7] flex-shrink-0">Active only</button>
+                <button onclick="filterMyRegs('cancelled')" id="pill-reg-cancelled" class="h-8 px-3 rounded-[4px] bg-[#F7F8FA] border border-[#E2E8F0] text-[#4A5568] hover:bg-[#EDF2F7] flex-shrink-0">Cancelled</button>
+            </div>
+
+            <!-- Desktop Table View (>= 768px) -->
+            <div class="hidden md:block bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm" role="table">
+                        <thead class="bg-[#F7F8FA] border-b border-[#E2E8F0] text-[13px] font-semibold text-[#4A5568]">
+                            <tr>
+                                <th class="py-3 px-4">Event title</th>
+                                <th class="py-3 px-4">Date</th>
+                                <th class="py-3 px-4">Venue</th>
+                                <th class="py-3 px-4 text-right">Fee</th>
+                                <th class="py-3 px-4">Status</th>
+                                <th class="py-3 px-4 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="my-regs-tbody" class="divide-y divide-[#EDF2F7]"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mobile Stacked Cards View (< 768px) -->
+            <div id="my-regs-mobile" class="md:hidden space-y-3"></div>
+        </section>
+
+    </main>
+
+    <!-- Institutional Footer with Demo Line -->
+    <footer class="mt-auto border-t border-[#E2E8F0] bg-white">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between text-xs text-[#718096] gap-2 text-center sm:text-left">
+            <div>College Event Management System &middot; Academic Year 2026</div>
+            <div>Demo build. Data is sample data and is not saved on a server.</div>
+        </div>
+    </footer>
+
+    <!-- Interactive Client-side Script -->
+    <script>
+        const STORAGE_KEY_EVENTS = "cems_events_v1";
+        const STORAGE_KEY_REGS = "cems_registrations_v1";
+        const currentUser = getCurrentUser() || { username: "alice", name: "Alice Sharma", roll_no: "CS2026-001", department: "Computer Engineering" };
+
+        const CATEGORY_COLORS = {
+            "Technical": "#2563EB",
+            "Cultural": "#D97706",
+            "Sports": "#059669",
+            "Workshop": "#7C3AED",
+            "Seminar": "#4B5563"
+        };
+
+        function getInitialEvents() {
+            const today = new Date();
+            const addDays = (d, n) => {
+                const copy = new Date(d);
+                copy.setDate(copy.getDate() + n);
+                return copy.toISOString().split("T")[0];
+            };
+
+            return [
+                {
+                    id: 1,
+                    title: "AI & Machine Learning 24h Hackathon",
+                    category: "Technical",
+                    event_date: addDays(today, 10),
+                    venue: "Main Turing Auditorium & Lab 401",
+                    description: "24-hour flagship hackathon solving real-world challenges in GenAI, autonomous systems, and edge computing.",
+                    fee: 0,
+                    capacity: 60,
+                    registered_count: 52
+                },
+                {
+                    id: 2,
+                    title: "Aura 2026: Annual Cultural Fiesta",
+                    category: "Cultural",
+                    event_date: addDays(today, 18),
+                    venue: "Open Air Amphitheatre",
+                    description: "The campus's biggest cultural extravaganza featuring music battles, classical and modern dance competitions.",
+                    fee: 150,
+                    capacity: 150,
+                    registered_count: 114
+                },
+                {
+                    id: 3,
+                    title: "Inter-College 7-a-Side Football Cup",
+                    category: "Sports",
+                    event_date: addDays(today, 25),
+                    venue: "University Sports Complex Turf",
+                    description: "High-octane knockouts with teams from across state colleges. Official referees, trophies, and cash prizes.",
+                    fee: 50,
+                    capacity: 80,
+                    registered_count: 68
+                },
+                {
+                    id: 4,
+                    title: "Cloud Native & DevOps Hands-on Bootcamp",
+                    category: "Workshop",
+                    event_date: addDays(today, 14),
+                    venue: "Seminar Hall B & Hybrid Live Stream",
+                    description: "Deep-dive workshop on Docker containers, Kubernetes orchestrations, Terraform, and GitHub Actions CI/CD pipelines.",
+                    fee: 99,
+                    capacity: 45,
+                    registered_count: 41
+                },
+                {
+                    id: 5,
+                    title: "Big Tech Career & System Design Seminar",
+                    category: "Seminar",
+                    event_date: addDays(today, 32),
+                    venue: "Executive Conference Hall 1",
+                    description: "Alumni keynote speakers from Google, Microsoft, and Uber discussing technical interviews and scalable system design.",
+                    fee: 0,
+                    capacity: 120,
+                    registered_count: 95
+                },
+                {
+                    id: 6,
+                    title: "Autonomous Drone & Robotics Expo",
+                    category: "Workshop",
+                    event_date: addDays(today, -20),
+                    venue: "Robotics Lab & Indoor Field",
+                    description: "Hands-on flight controller programming and autonomous navigation demo. Successfully concluded.",
+                    fee: 120,
+                    capacity: 40,
+                    registered_count: 40
+                }
+            ];
+        }
+
+        function getInitialRegistrations() {
+            return [
+                { id: 101, event_id: 1, user: currentUser.name, status: "registered", date: "2026-10-24 14:30" },
+                { id: 102, event_id: 4, user: currentUser.name, status: "registered", date: "2026-10-25 09:15" },
+                { id: 103, event_id: 3, user: currentUser.name, status: "cancelled", date: "2026-10-22 11:00" }
+            ];
+        }
+
+        let events = [];
+        let registrations = [];
+        let selectedCategory = "";
+        let myRegFilter = "all";
+
+        function loadState() {
+            try {
+                const savedEvents = localStorage.getItem(STORAGE_KEY_EVENTS);
+                events = savedEvents ? JSON.parse(savedEvents) : getInitialEvents();
+                const savedRegs = localStorage.getItem(STORAGE_KEY_REGS);
+                registrations = savedRegs ? JSON.parse(savedRegs) : getInitialRegistrations();
+            } catch (e) {
+                events = getInitialEvents();
+                registrations = getInitialRegistrations();
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY_EVENTS, JSON.stringify(events));
+            localStorage.setItem(STORAGE_KEY_REGS, JSON.stringify(registrations));
+        }
+
+        function resetData() {
+            if (confirm("Reset demo events and registrations back to defaults?")) {
+                localStorage.removeItem(STORAGE_KEY_EVENTS);
+                localStorage.removeItem(STORAGE_KEY_REGS);
+                loadState();
+                showAlert("Demo database restored to default seed state.", "success");
+                renderAll();
+            }
+        }
+
+        function showAlert(msg, type = "success") {
+            const container = document.getElementById("alerts-container");
+            const alert = document.createElement("div");
+            const isSuccess = type === "success";
+            alert.className = `flex items-start justify-between p-3 rounded-[4px] border text-xs sm:text-sm transition-opacity duration-200 ${
+                isSuccess ? "bg-[#E6F4EA] border-[#C6F6D5] text-[#276749]" : "bg-[#FDECEC] border-[#FED7D7] text-[#9B1C1C]"
+            }`;
+            alert.innerHTML = `
+                <div class="pr-2 leading-relaxed font-medium">${msg}</div>
+                <button type="button" onclick="this.parentElement.remove()" class="text-current hover:opacity-75 ml-2 text-base leading-none font-bold">&times;</button>
+            `;
+            container.appendChild(alert);
+            setTimeout(() => {
+                alert.style.opacity = "0";
+                setTimeout(() => alert.remove(), 200);
+            }, 4000);
+        }
+
+        function isPast(dateStr) {
+            return new Date(dateStr) < new Date(new Date().toDateString());
+        }
+
+        function formatFee(fee) {
+            return Number(fee) === 0 ? "Free" : `₹${Math.round(fee)}`;
+        }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        function switchTab(tab) {
+            const vBrowse = document.getElementById("view-browse");
+            const vMyRegs = document.getElementById("view-my-regs");
+            const btnBrowse = document.getElementById("tab-btn-browse");
+            const btnMyRegs = document.getElementById("tab-btn-my-regs");
+
+            if (tab === "browse") {
+                vBrowse.classList.remove("hidden");
+                vMyRegs.classList.add("hidden");
+                btnBrowse.className = "py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5 flex-shrink-0";
+                btnMyRegs.className = "py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0";
+                renderBrowseEvents();
+            } else {
+                vMyRegs.classList.remove("hidden");
+                vBrowse.classList.add("hidden");
+                btnMyRegs.className = "py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5 flex-shrink-0";
+                btnBrowse.className = "py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0";
+                renderMyRegs();
+            }
+        }
+
+        // =============================================================
+        // ACTIONS: REGISTER & CANCEL
+        // =============================================================
+
+        function registerForEvent(eventId) {
+            const ev = events.find(e => e.id === eventId);
+            if (!ev) return;
+
+            if (isPast(ev.event_date)) {
+                showAlert(`Cannot register: '${ev.title}' has concluded.`, "error");
+                return;
+            }
+
+            const available = ev.capacity - ev.registered_count;
+            if (available <= 0) {
+                showAlert(`Cannot register: '${ev.title}' is sold out.`, "error");
+                return;
+            }
+
+            const existing = registrations.find(r => r.event_id === eventId && r.user === currentUser.name);
+            if (existing && existing.status === "registered") {
+                showAlert(`You already have a confirmed seat for '${ev.title}'.`, "error");
+                return;
+            }
+
+            if (existing) {
+                existing.status = "registered";
+                existing.date = new Date().toISOString().replace("T", " ").substring(0, 16);
+            } else {
+                registrations.push({
+                    id: Date.now(),
+                    event_id: eventId,
+                    user: currentUser.name,
+                    status: "registered",
+                    date: new Date().toISOString().replace("T", " ").substring(0, 16)
+                });
+            }
+
+            ev.registered_count += 1;
+            saveState();
+            showAlert(`Successfully registered for ${ev.title}! Seat confirmed.`);
+            renderAll();
+        }
+
+        function cancelRegistration(regId) {
+            if (!confirm("Are you sure you want to cancel this registration?")) return;
+
+            const reg = registrations.find(r => r.id === regId);
+            if (!reg || reg.status === "cancelled") return;
+
+            reg.status = "cancelled";
+            const ev = events.find(e => e.id === reg.event_id);
+            if (ev && ev.registered_count > 0) {
+                ev.registered_count -= 1;
+            }
+
+            saveState();
+            showAlert(`Registration cancelled for ${ev ? ev.title : 'event'}.`);
+            renderAll();
+        }
+
+        function reactivateRegistration(regId) {
+            const reg = registrations.find(r => r.id === regId);
+            if (!reg) return;
+            registerForEvent(reg.event_id);
+        }
+
+        // =============================================================
+        // RENDER: BROWSE EVENTS
+        // =============================================================
+
+        function renderCategoryChips() {
+            const container = document.getElementById("category-chips");
+            const categories = ["", "Technical", "Cultural", "Sports", "Workshop", "Seminar"];
+            container.innerHTML = categories.map(cat => {
+                const isSelected = selectedCategory === cat;
+                const label = cat === "" ? "All" : cat;
+                return `
+                    <button type="button" onclick="setCategoryFilter('${cat}')"
+                            class="h-7 px-3 rounded-[4px] text-xs font-medium transition-colors duration-150 ${
+                                isSelected ? 'bg-[#1F3A5F] text-white' : 'bg-[#F7F8FA] border border-[#E2E8F0] text-[#4A5568] hover:bg-[#EDF2F7]'
+                            }">
+                        ${label}
+                    </button>
+                `;
+            }).join("");
+        }
+
+        function setCategoryFilter(cat) {
+            selectedCategory = cat;
+            renderCategoryChips();
+            renderBrowseEvents();
+        }
+
+        function renderBrowseEvents() {
+            const query = (document.getElementById("search-input").value || "").toLowerCase().trim();
+            const sortBy = document.getElementById("sort-select").value;
+            const grid = document.getElementById("events-grid");
+
+            let filtered = events.filter(ev => {
+                const matchCat = !selectedCategory || ev.category === selectedCategory;
+                const matchQuery = !query ||
+                    ev.title.toLowerCase().includes(query) ||
+                    ev.venue.toLowerCase().includes(query) ||
+                    (ev.description && ev.description.toLowerCase().includes(query));
+                return matchCat && matchQuery;
+            });
+
+            if (sortBy === "fee") {
+                filtered.sort((a, b) => a.fee - b.fee);
+            } else if (sortBy === "capacity") {
+                filtered.sort((a, b) => b.capacity - a.capacity);
+            } else {
+                filtered.sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
+            }
+
+            document.getElementById("events-count-text").textContent = `${filtered.length} event${filtered.length === 1 ? '' : 's'}`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full bg-white border border-[#E2E8F0] rounded-[6px] p-8 sm:p-10 text-center">
+                        <div class="text-[#718096] text-sm">No campus events found matching your criteria.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(ev => {
+                const past = isPast(ev.event_date);
+                const available = Math.max(0, ev.capacity - ev.registered_count);
+                const isFull = available === 0;
+                const percent = Math.min(100, Math.round((ev.registered_count / ev.capacity) * 100));
+
+                const userReg = registrations.find(r => r.event_id === ev.id && r.user === currentUser.name);
+                const isRegistered = userReg && userReg.status === "registered";
+                const isCancelled = userReg && userReg.status === "cancelled";
+
+                const dateObj = new Date(ev.event_date);
+                const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                const monthStr = months[dateObj.getMonth()];
+                const dayStr = dateObj.getDate();
+
+                let actionHtml = "";
+                if (isRegistered) {
+                    actionHtml = `
+                        <div class="flex items-center justify-between">
+                            <span class="badge badge-registered">Registered</span>
+                            <button onclick="cancelRegistration(${userReg.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline p-1">
+                                Cancel seat
+                            </button>
+                        </div>
+                    `;
+                } else if (isCancelled && !isFull && !past) {
+                    actionHtml = `
+                        <button onclick="registerForEvent(${ev.id})" class="w-full h-10 px-4 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-sm font-semibold rounded-[4px] transition-colors">
+                            Reactivate registration
+                        </button>
+                    `;
+                } else if (past) {
+                    actionHtml = `
+                        <button disabled class="w-full h-10 px-4 bg-[#EDF2F7] text-[#718096] text-sm font-semibold rounded-[4px] cursor-not-allowed">
+                            Event concluded
+                        </button>
+                    `;
+                } else if (isFull) {
+                    actionHtml = `
+                        <button disabled class="w-full h-10 px-4 bg-[#EDF2F7] text-[#718096] text-sm font-semibold rounded-[4px] cursor-not-allowed">
+                            Sold out
+                        </button>
+                    `;
+                } else {
+                    actionHtml = `
+                        <button onclick="registerForEvent(${ev.id})" class="w-full h-10 px-4 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-sm font-semibold rounded-[4px] transition-colors">
+                            Register for event
+                        </button>
+                    `;
+                }
+
+                return `
+                    <article class="bg-white border border-[#E2E8F0] hover:border-[#CBD5E0] rounded-[6px] p-4 sm:p-5 flex flex-col justify-between transition-colors shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                        <div>
+                            <div class="flex items-start justify-between gap-2.5 mb-2.5 sm:mb-3">
+                                <div class="flex items-center space-x-2.5 sm:space-x-3">
+                                    <div class="flex flex-col items-center justify-center w-11 h-11 sm:w-12 sm:h-12 bg-[#F7F8FA] border border-[#E2E8F0] rounded-[4px] text-center flex-shrink-0">
+                                        <span class="text-[9px] sm:text-[10px] font-semibold text-[#718096] uppercase leading-none">${monthStr}</span>
+                                        <span class="text-base sm:text-lg font-bold text-[#1A202C] tabular-nums leading-tight mt-0.5">${dayStr}</span>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center space-x-1.5">
+                                            <span class="w-1.5 h-1.5 rounded-full inline-block flex-shrink-0" style="background-color: ${CATEGORY_COLORS[ev.category] || '#718096'};"></span>
+                                            <span class="text-xs font-medium text-[#4A5568]">${ev.category}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                ${past ? '<span class="badge badge-neutral">Past</span>' : ''}
+                            </div>
+
+                            <h3 class="font-serif text-base sm:text-lg font-semibold text-[#1A202C] leading-snug">
+                                ${ev.title}
+                            </h3>
+
+                            <p class="text-xs sm:text-sm text-[#4A5568] mt-1.5 sm:mt-2 line-clamp-2 leading-relaxed">
+                                ${ev.description || ''}
+                            </p>
+
+                            <dl class="mt-3.5 sm:mt-4 pt-2.5 sm:pt-3 border-t border-[#EDF2F7] grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+                                <div>
+                                    <dt class="text-[#718096]">Venue</dt>
+                                    <dd class="text-[#1A202C] font-medium mt-0.5 truncate" title="${ev.venue}">${ev.venue}</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-[#718096]">Fee</dt>
+                                    <dd class="text-[#1A202C] font-medium mt-0.5 tabular-nums">${formatFee(ev.fee)}</dd>
+                                </div>
+                            </dl>
+
+                            <!-- Seat Bar -->
+                            <div class="mt-3.5 sm:mt-4 pt-2.5 sm:pt-3 border-t border-[#EDF2F7]">
+                                <div class="flex items-center justify-between text-xs text-[#718096] mb-1 tabular-nums">
+                                    <span>${available} seat${available === 1 ? '' : 's'} remaining</span>
+                                    <span>${percent}%</span>
+                                </div>
+                                <div class="w-full bg-[#EDF2F7] rounded-full h-1.5 overflow-hidden">
+                                    <div class="bg-[#1F3A5F] h-1.5 rounded-full" style="width: ${percent}%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 sm:mt-5 pt-3 border-t border-[#EDF2F7]">
+                            ${actionHtml}
+                        </div>
+                    </article>
+                `;
+            }).join("");
+        }
+
+        // =============================================================
+        // RENDER: MY REGISTRATIONS
+        // =============================================================
+
+        function filterMyRegs(filter) {
+            myRegFilter = filter;
+            ["all", "registered", "cancelled"].forEach(f => {
+                const btn = document.getElementById(`pill-reg-${f}`);
+                if (f === filter) {
+                    btn.className = "h-8 px-3 rounded-[4px] bg-[#1F3A5F] text-white flex-shrink-0";
+                } else {
+                    btn.className = "h-8 px-3 rounded-[4px] bg-[#F7F8FA] border border-[#E2E8F0] text-[#4A5568] hover:bg-[#EDF2F7] flex-shrink-0";
+                }
+            });
+            renderMyRegs();
+        }
+
+        function renderMyRegs() {
+            const tbody = document.getElementById("my-regs-tbody");
+            const mobileContainer = document.getElementById("my-regs-mobile");
+
+            const userRegs = registrations.filter(r => {
+                if (r.user !== currentUser.name) return false;
+                if (myRegFilter !== "all" && r.status !== myRegFilter) return false;
+                return true;
+            });
+
+            const activeCount = registrations.filter(r => r.user === currentUser.name && r.status === "registered").length;
+            document.getElementById("badge-my-regs-count").textContent = activeCount;
+
+            if (userRegs.length === 0) {
+                const emptyMsg = `
+                    <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-8 text-center text-sm text-[#718096]">
+                        No reservations found for the selected filter.
+                    </div>
+                `;
+                tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-sm text-[#718096]">No reservations found for the selected filter.</td></tr>`;
+                mobileContainer.innerHTML = emptyMsg;
+                return;
+            }
+
+            // Desktop Table
+            tbody.innerHTML = userRegs.map(reg => {
+                const ev = events.find(e => e.id === reg.event_id) || { title: "Unknown Event", venue: "—", fee: 0, event_date: "2026-01-01" };
+                const isRegistered = reg.status === "registered";
+
+                return `
+                    <tr class="hover:bg-[#F7F8FA] transition-colors">
+                        <td class="py-3.5 px-4 font-medium text-[#1A202C]">${ev.title}</td>
+                        <td class="py-3.5 px-4 tabular-nums text-[#4A5568] whitespace-nowrap">${formatDate(ev.event_date)}</td>
+                        <td class="py-3.5 px-4 text-[#4A5568]">${ev.venue}</td>
+                        <td class="py-3.5 px-4 text-right tabular-nums text-[#4A5568] whitespace-nowrap">${formatFee(ev.fee)}</td>
+                        <td class="py-3.5 px-4 whitespace-nowrap">
+                            <span class="badge ${isRegistered ? 'badge-registered' : 'badge-cancelled'}">
+                                ${isRegistered ? 'Registered' : 'Cancelled'}
+                            </span>
+                        </td>
+                        <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                            ${isRegistered ? `
+                                <button onclick="cancelRegistration(${reg.id})" class="h-[34px] px-3 text-xs font-semibold text-[#9B1C1C] bg-white border border-[#FED7D7] hover:bg-[#FDECEC] rounded-[4px] transition-colors">
+                                    Cancel registration
+                                </button>
+                            ` : `
+                                <button onclick="reactivateRegistration(${reg.id})" class="h-[34px] px-3 text-xs font-semibold text-white bg-[#1F3A5F] hover:bg-[#162B47] rounded-[4px] transition-colors">
+                                    Reactivate
+                                </button>
+                            `}
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+
+            // Mobile Cards
+            mobileContainer.innerHTML = userRegs.map(reg => {
+                const ev = events.find(e => e.id === reg.event_id) || { title: "Unknown Event", venue: "—", fee: 0, event_date: "2026-01-01", category: "Technical" };
+                const isRegistered = reg.status === "registered";
+
+                return `
+                    <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 space-y-3 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center space-x-1.5 text-xs text-[#718096]">
+                                <span class="w-1.5 h-1.5 rounded-full inline-block" style="background-color: ${CATEGORY_COLORS[ev.category] || '#718096'};"></span>
+                                <span>${ev.category}</span>
+                            </div>
+                            <span class="badge ${isRegistered ? 'badge-registered' : 'badge-cancelled'}">
+                                ${isRegistered ? 'Registered' : 'Cancelled'}
+                            </span>
+                        </div>
+
+                        <h3 class="font-serif text-base font-semibold text-[#1A202C]">
+                            ${ev.title}
+                        </h3>
+
+                        <dl class="grid grid-cols-2 gap-2 text-xs text-[#4A5568] pt-2 border-t border-[#EDF2F7]">
+                            <div>
+                                <dt class="text-[#718096]">Date</dt>
+                                <dd class="font-medium text-[#1A202C] tabular-nums mt-0.5">${formatDate(ev.event_date)}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-[#718096]">Fee</dt>
+                                <dd class="font-medium text-[#1A202C] tabular-nums mt-0.5">${formatFee(ev.fee)}</dd>
+                            </div>
+                            <div class="col-span-2">
+                                <dt class="text-[#718096]">Venue</dt>
+                                <dd class="font-medium text-[#1A202C] mt-0.5 truncate">${ev.venue}</dd>
+                            </div>
+                        </dl>
+
+                        <div class="pt-2 border-t border-[#EDF2F7]">
+                            ${isRegistered ? `
+                                <button onclick="cancelRegistration(${reg.id})" class="w-full h-10 text-xs font-semibold text-[#9B1C1C] bg-white border border-[#FED7D7] hover:bg-[#FDECEC] rounded-[4px] transition-colors">
+                                    Cancel registration
+                                </button>
+                            ` : `
+                                <button onclick="reactivateRegistration(${reg.id})" class="w-full h-10 text-xs font-semibold text-white bg-[#1F3A5F] hover:bg-[#162B47] rounded-[4px] transition-colors">
+                                    Reactivate pass
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function renderAll() {
+            renderCategoryChips();
+            renderBrowseEvents();
+            renderMyRegs();
+        }
+
+        // Initialize user header info and data
+        document.addEventListener("DOMContentLoaded", () => {
+            if (currentUser) {
+                const nameEl = document.getElementById("user-display-name");
+                const infoEl = document.getElementById("user-display-info");
+                const avatarEl = document.getElementById("user-avatar");
+                if (nameEl) nameEl.textContent = currentUser.name || currentUser.username;
+                if (infoEl) infoEl.textContent = `Student · ${currentUser.roll_no || 'CS2026-001'}`;
+                if (avatarEl) {
+                    const initials = (currentUser.name || currentUser.username || "ST")
+                        .split(" ")
+                        .map(w => w[0])
+                        .join("")
+                        .substring(0, 2)
+                        .toUpperCase();
+                    avatarEl.textContent = initials;
+                }
+            }
+            loadState();
+            renderAll();
+        });
+    </script>
+</body>
+</html>
