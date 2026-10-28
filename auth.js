@@ -60,3 +60,4 @@ function signOut() {
     sessionStorage.removeItem("cems_user");
     window.location.replace("login.html");
 }
+

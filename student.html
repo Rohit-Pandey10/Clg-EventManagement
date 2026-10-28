@@ -8,6 +8,8 @@
 
     <!-- Route Guard: checks session and enforces student role -->
     <script src="auth.js"></script>
+    <!-- Shared Demo Seed Data & Utilities -->
+    <script src="data.js"></script>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -82,7 +84,7 @@
                     </a>
                 </div>
 
-                <!-- User identity and Sign out (NO portal switcher!) -->
+                <!-- User identity and Sign out -->
                 <div class="flex items-center space-x-3 sm:space-x-4 flex-shrink-0">
                     <div class="flex items-center space-x-2">
                         <span id="user-avatar" class="w-8 h-8 rounded-full bg-[#E0E7FF] text-[#1F3A5F] flex items-center justify-center font-bold text-xs tabular-nums flex-shrink-0">
@@ -110,7 +112,7 @@
                 <button onclick="switchTab('my-regs')" id="tab-btn-my-regs" class="py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0">
                     <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z"></path></svg>
                     <span>My Registrations</span>
-                    <span id="badge-my-regs-count" class="ml-1 px-1.5 py-0.2 bg-[#EDF2F7] text-[#4A5568] text-xs rounded-full tabular-nums font-bold">2</span>
+                    <span id="badge-my-regs-count" class="ml-1 px-1.5 py-0.2 bg-[#EDF2F7] text-[#4A5568] text-xs rounded-full tabular-nums font-bold">0</span>
                 </button>
             </div>
         </nav>
@@ -217,8 +219,6 @@
 
     <!-- Interactive Client-side Script -->
     <script>
-        const STORAGE_KEY_EVENTS = "cems_events_v1";
-        const STORAGE_KEY_REGS = "cems_registrations_v1";
         const currentUser = getCurrentUser() || { username: "alice", name: "Alice Sharma", roll_no: "CS2026-001", department: "Computer Engineering" };
 
         const CATEGORY_COLORS = {
@@ -226,94 +226,9 @@
             "Cultural": "#D97706",
             "Sports": "#059669",
             "Workshop": "#7C3AED",
-            "Seminar": "#4B5563"
+            "Seminar": "#4B5563",
+            "Other": "#718096"
         };
-
-        function getInitialEvents() {
-            const today = new Date();
-            const addDays = (d, n) => {
-                const copy = new Date(d);
-                copy.setDate(copy.getDate() + n);
-                return copy.toISOString().split("T")[0];
-            };
-
-            return [
-                {
-                    id: 1,
-                    title: "AI & Machine Learning 24h Hackathon",
-                    category: "Technical",
-                    event_date: addDays(today, 10),
-                    venue: "Main Turing Auditorium & Lab 401",
-                    description: "24-hour flagship hackathon solving real-world challenges in GenAI, autonomous systems, and edge computing.",
-                    fee: 0,
-                    capacity: 60,
-                    registered_count: 52
-                },
-                {
-                    id: 2,
-                    title: "Aura 2026: Annual Cultural Fiesta",
-                    category: "Cultural",
-                    event_date: addDays(today, 18),
-                    venue: "Open Air Amphitheatre",
-                    description: "The campus's biggest cultural extravaganza featuring music battles, classical and modern dance competitions.",
-                    fee: 150,
-                    capacity: 150,
-                    registered_count: 114
-                },
-                {
-                    id: 3,
-                    title: "Inter-College 7-a-Side Football Cup",
-                    category: "Sports",
-                    event_date: addDays(today, 25),
-                    venue: "University Sports Complex Turf",
-                    description: "High-octane knockouts with teams from across state colleges. Official referees, trophies, and cash prizes.",
-                    fee: 50,
-                    capacity: 80,
-                    registered_count: 68
-                },
-                {
-                    id: 4,
-                    title: "Cloud Native & DevOps Hands-on Bootcamp",
-                    category: "Workshop",
-                    event_date: addDays(today, 14),
-                    venue: "Seminar Hall B & Hybrid Live Stream",
-                    description: "Deep-dive workshop on Docker containers, Kubernetes orchestrations, Terraform, and GitHub Actions CI/CD pipelines.",
-                    fee: 99,
-                    capacity: 45,
-                    registered_count: 41
-                },
-                {
-                    id: 5,
-                    title: "Big Tech Career & System Design Seminar",
-                    category: "Seminar",
-                    event_date: addDays(today, 32),
-                    venue: "Executive Conference Hall 1",
-                    description: "Alumni keynote speakers from Google, Microsoft, and Uber discussing technical interviews and scalable system design.",
-                    fee: 0,
-                    capacity: 120,
-                    registered_count: 95
-                },
-                {
-                    id: 6,
-                    title: "Autonomous Drone & Robotics Expo",
-                    category: "Workshop",
-                    event_date: addDays(today, -20),
-                    venue: "Robotics Lab & Indoor Field",
-                    description: "Hands-on flight controller programming and autonomous navigation demo. Successfully concluded.",
-                    fee: 120,
-                    capacity: 40,
-                    registered_count: 40
-                }
-            ];
-        }
-
-        function getInitialRegistrations() {
-            return [
-                { id: 101, event_id: 1, user: currentUser.name, status: "registered", date: "2026-10-24 14:30" },
-                { id: 102, event_id: 4, user: currentUser.name, status: "registered", date: "2026-10-25 09:15" },
-                { id: 103, event_id: 3, user: currentUser.name, status: "cancelled", date: "2026-10-22 11:00" }
-            ];
-        }
 
         let events = [];
         let registrations = [];
@@ -341,6 +256,7 @@
             if (confirm("Reset demo events and registrations back to defaults?")) {
                 localStorage.removeItem(STORAGE_KEY_EVENTS);
                 localStorage.removeItem(STORAGE_KEY_REGS);
+                localStorage.removeItem(STORAGE_KEY_STUDENTS);
                 loadState();
                 showAlert("Demo database restored to default seed state.", "success");
                 renderAll();
@@ -355,7 +271,7 @@
                 isSuccess ? "bg-[#E6F4EA] border-[#C6F6D5] text-[#276749]" : "bg-[#FDECEC] border-[#FED7D7] text-[#9B1C1C]"
             }`;
             alert.innerHTML = `
-                <div class="pr-2 leading-relaxed font-medium">${msg}</div>
+                <div class="pr-2 leading-relaxed font-medium">${escapeHtml(msg)}</div>
                 <button type="button" onclick="this.parentElement.remove()" class="text-current hover:opacity-75 ml-2 text-base leading-none font-bold">&times;</button>
             `;
             container.appendChild(alert);
@@ -365,18 +281,8 @@
             }, 4000);
         }
 
-        function isPast(dateStr) {
-            return new Date(dateStr) < new Date(new Date().toDateString());
-        }
-
-        function formatFee(fee) {
-            return Number(fee) === 0 ? "Free" : `₹${Math.round(fee)}`;
-        }
-
-        function formatDate(dateStr) {
-            const d = new Date(dateStr);
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        function getActiveSeatsFilled(eventId) {
+            return registrations.filter(r => Number(r.event_id) === Number(eventId) && r.status === "registered").length;
         }
 
         function switchTab(tab) {
@@ -413,13 +319,14 @@
                 return;
             }
 
-            const available = ev.capacity - ev.registered_count;
+            const filled = getActiveSeatsFilled(eventId);
+            const available = ev.capacity - filled;
             if (available <= 0) {
                 showAlert(`Cannot register: '${ev.title}' is sold out.`, "error");
                 return;
             }
 
-            const existing = registrations.find(r => r.event_id === eventId && r.user === currentUser.name);
+            const existing = registrations.find(r => Number(r.event_id) === Number(eventId) && (r.username === currentUser.username || r.user === currentUser.name));
             if (existing && existing.status === "registered") {
                 showAlert(`You already have a confirmed seat for '${ev.title}'.`, "error");
                 return;
@@ -433,12 +340,14 @@
                     id: Date.now(),
                     event_id: eventId,
                     user: currentUser.name,
+                    username: currentUser.username,
+                    roll_no: currentUser.roll_no || "",
+                    department: currentUser.department || "",
                     status: "registered",
                     date: new Date().toISOString().replace("T", " ").substring(0, 16)
                 });
             }
 
-            ev.registered_count += 1;
             saveState();
             showAlert(`Successfully registered for ${ev.title}! Seat confirmed.`);
             renderAll();
@@ -451,12 +360,8 @@
             if (!reg || reg.status === "cancelled") return;
 
             reg.status = "cancelled";
-            const ev = events.find(e => e.id === reg.event_id);
-            if (ev && ev.registered_count > 0) {
-                ev.registered_count -= 1;
-            }
-
             saveState();
+            const ev = events.find(e => e.id === reg.event_id);
             showAlert(`Registration cancelled for ${ev ? ev.title : 'event'}.`);
             renderAll();
         }
@@ -473,7 +378,7 @@
 
         function renderCategoryChips() {
             const container = document.getElementById("category-chips");
-            const categories = ["", "Technical", "Cultural", "Sports", "Workshop", "Seminar"];
+            const categories = ["", "Technical", "Cultural", "Sports", "Workshop", "Seminar", "Other"];
             container.innerHTML = categories.map(cat => {
                 const isSelected = selectedCategory === cat;
                 const label = cat === "" ? "All" : cat;
@@ -509,11 +414,11 @@
             });
 
             if (sortBy === "fee") {
-                filtered.sort((a, b) => a.fee - b.fee);
+                filtered.sort((a, b) => Number(a.fee) - Number(b.fee));
             } else if (sortBy === "capacity") {
-                filtered.sort((a, b) => b.capacity - a.capacity);
+                filtered.sort((a, b) => Number(b.capacity) - Number(a.capacity));
             } else {
-                filtered.sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
+                filtered.sort((a, b) => parseLocalDate(a.event_date) - parseLocalDate(b.event_date));
             }
 
             document.getElementById("events-count-text").textContent = `${filtered.length} event${filtered.length === 1 ? '' : 's'}`;
@@ -529,15 +434,16 @@
 
             grid.innerHTML = filtered.map(ev => {
                 const past = isPast(ev.event_date);
-                const available = Math.max(0, ev.capacity - ev.registered_count);
+                const activeCount = getActiveSeatsFilled(ev.id);
+                const available = Math.max(0, Number(ev.capacity) - activeCount);
                 const isFull = available === 0;
-                const percent = Math.min(100, Math.round((ev.registered_count / ev.capacity) * 100));
+                const percent = Math.min(100, Math.round((activeCount / (Number(ev.capacity) || 1)) * 100));
 
-                const userReg = registrations.find(r => r.event_id === ev.id && r.user === currentUser.name);
+                const userReg = registrations.find(r => Number(r.event_id) === Number(ev.id) && (r.username === currentUser.username || r.user === currentUser.name));
                 const isRegistered = userReg && userReg.status === "registered";
                 const isCancelled = userReg && userReg.status === "cancelled";
 
-                const dateObj = new Date(ev.event_date);
+                const dateObj = parseLocalDate(ev.event_date);
                 const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
                 const monthStr = months[dateObj.getMonth()];
                 const dayStr = dateObj.getDate();
@@ -590,7 +496,7 @@
                                     <div>
                                         <div class="flex items-center space-x-1.5">
                                             <span class="w-1.5 h-1.5 rounded-full inline-block flex-shrink-0" style="background-color: ${CATEGORY_COLORS[ev.category] || '#718096'};"></span>
-                                            <span class="text-xs font-medium text-[#4A5568]">${ev.category}</span>
+                                            <span class="text-xs font-medium text-[#4A5568]">${escapeHtml(ev.category)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -598,17 +504,17 @@
                             </div>
 
                             <h3 class="font-serif text-base sm:text-lg font-semibold text-[#1A202C] leading-snug">
-                                ${ev.title}
+                                ${escapeHtml(ev.title)}
                             </h3>
 
                             <p class="text-xs sm:text-sm text-[#4A5568] mt-1.5 sm:mt-2 line-clamp-2 leading-relaxed">
-                                ${ev.description || ''}
+                                ${escapeHtml(ev.description || '')}
                             </p>
 
                             <dl class="mt-3.5 sm:mt-4 pt-2.5 sm:pt-3 border-t border-[#EDF2F7] grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
                                 <div>
                                     <dt class="text-[#718096]">Venue</dt>
-                                    <dd class="text-[#1A202C] font-medium mt-0.5 truncate" title="${ev.venue}">${ev.venue}</dd>
+                                    <dd class="text-[#1A202C] font-medium mt-0.5 truncate" title="${escapeHtml(ev.venue)}">${escapeHtml(ev.venue)}</dd>
                                 </div>
                                 <div>
                                     <dt class="text-[#718096]">Fee</dt>
@@ -658,13 +564,15 @@
             const mobileContainer = document.getElementById("my-regs-mobile");
 
             const userRegs = registrations.filter(r => {
-                if (r.user !== currentUser.name) return false;
+                const matchesUser = (r.username === currentUser.username || r.user === currentUser.name);
+                if (!matchesUser) return false;
                 if (myRegFilter !== "all" && r.status !== myRegFilter) return false;
                 return true;
             });
 
-            const activeCount = registrations.filter(r => r.user === currentUser.name && r.status === "registered").length;
-            document.getElementById("badge-my-regs-count").textContent = activeCount;
+            const activeCount = registrations.filter(r => (r.username === currentUser.username || r.user === currentUser.name) && r.status === "registered").length;
+            const countEl = document.getElementById("badge-my-regs-count");
+            if (countEl) countEl.textContent = activeCount;
 
             if (userRegs.length === 0) {
                 const emptyMsg = `
@@ -679,14 +587,14 @@
 
             // Desktop Table
             tbody.innerHTML = userRegs.map(reg => {
-                const ev = events.find(e => e.id === reg.event_id) || { title: "Unknown Event", venue: "—", fee: 0, event_date: "2026-01-01" };
+                const ev = events.find(e => Number(e.id) === Number(reg.event_id)) || { title: "Unknown Event", venue: "—", fee: 0, event_date: "2026-01-01" };
                 const isRegistered = reg.status === "registered";
 
                 return `
                     <tr class="hover:bg-[#F7F8FA] transition-colors">
-                        <td class="py-3.5 px-4 font-medium text-[#1A202C]">${ev.title}</td>
+                        <td class="py-3.5 px-4 font-medium text-[#1A202C]">${escapeHtml(ev.title)}</td>
                         <td class="py-3.5 px-4 tabular-nums text-[#4A5568] whitespace-nowrap">${formatDate(ev.event_date)}</td>
-                        <td class="py-3.5 px-4 text-[#4A5568]">${ev.venue}</td>
+                        <td class="py-3.5 px-4 text-[#4A5568]">${escapeHtml(ev.venue)}</td>
                         <td class="py-3.5 px-4 text-right tabular-nums text-[#4A5568] whitespace-nowrap">${formatFee(ev.fee)}</td>
                         <td class="py-3.5 px-4 whitespace-nowrap">
                             <span class="badge ${isRegistered ? 'badge-registered' : 'badge-cancelled'}">
@@ -710,7 +618,7 @@
 
             // Mobile Cards
             mobileContainer.innerHTML = userRegs.map(reg => {
-                const ev = events.find(e => e.id === reg.event_id) || { title: "Unknown Event", venue: "—", fee: 0, event_date: "2026-01-01", category: "Technical" };
+                const ev = events.find(e => Number(e.id) === Number(reg.event_id)) || { title: "Unknown Event", venue: "—", fee: 0, event_date: "2026-01-01", category: "Technical" };
                 const isRegistered = reg.status === "registered";
 
                 return `
@@ -718,7 +626,7 @@
                         <div class="flex items-center justify-between gap-2">
                             <div class="flex items-center space-x-1.5 text-xs text-[#718096]">
                                 <span class="w-1.5 h-1.5 rounded-full inline-block" style="background-color: ${CATEGORY_COLORS[ev.category] || '#718096'};"></span>
-                                <span>${ev.category}</span>
+                                <span>${escapeHtml(ev.category)}</span>
                             </div>
                             <span class="badge ${isRegistered ? 'badge-registered' : 'badge-cancelled'}">
                                 ${isRegistered ? 'Registered' : 'Cancelled'}
@@ -726,7 +634,7 @@
                         </div>
 
                         <h3 class="font-serif text-base font-semibold text-[#1A202C]">
-                            ${ev.title}
+                            ${escapeHtml(ev.title)}
                         </h3>
 
                         <dl class="grid grid-cols-2 gap-2 text-xs text-[#4A5568] pt-2 border-t border-[#EDF2F7]">
@@ -740,7 +648,7 @@
                             </div>
                             <div class="col-span-2">
                                 <dt class="text-[#718096]">Venue</dt>
-                                <dd class="font-medium text-[#1A202C] mt-0.5 truncate">${ev.venue}</dd>
+                                <dd class="font-medium text-[#1A202C] mt-0.5 truncate">${escapeHtml(ev.venue)}</dd>
                             </div>
                         </dl>
 
@@ -775,13 +683,7 @@
                 if (nameEl) nameEl.textContent = currentUser.name || currentUser.username;
                 if (infoEl) infoEl.textContent = `Student · ${currentUser.roll_no || 'CS2026-001'}`;
                 if (avatarEl) {
-                    const initials = (currentUser.name || currentUser.username || "ST")
-                        .split(" ")
-                        .map(w => w[0])
-                        .join("")
-                        .substring(0, 2)
-                        .toUpperCase();
-                    avatarEl.textContent = initials;
+                    avatarEl.textContent = getInitials(currentUser.name || currentUser.username || "ST");
                 }
             }
             loadState();

@@ -8,6 +8,8 @@
 
     <!-- Route Guard: checks session and enforces admin role -->
     <script src="auth.js"></script>
+    <!-- Shared Demo Seed Data & Utilities -->
+    <script src="data.js"></script>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,18 +65,18 @@
         .scrollbar-none::-webkit-scrollbar { display: none; }
 
         @media screen and (max-width: 640px) {
-            input, select { font-size: 16px !important; }
+            input, select, textarea { font-size: 16px !important; }
         }
     </style>
 </head>
 <body class="min-h-full flex flex-col bg-[#F7F8FA] text-[#1A202C] antialiased">
 
-    <!-- Header Navigation -->
+    <!-- Header Navigation: Fully unified with Django base.html -->
     <header class="bg-white border-b border-[#E2E8F0] sticky top-0 z-40">
         <div class="max-w-[1200px] mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-14 sm:h-16 gap-3">
-                <!-- Wordmark -->
-                <div class="flex items-center space-x-2 min-w-0">
+                <!-- Institution Wordmark -->
+                <div class="flex items-center min-w-0 pr-2">
                     <a href="admin.html" class="font-serif text-base sm:text-lg font-semibold text-[#1A202C] hover:text-[#1F3A5F] transition-colors truncate">
                         <span class="xs:hidden">CEMS Admin</span>
                         <span class="hidden xs:inline sm:hidden">CEMS Organizer</span>
@@ -82,10 +84,34 @@
                     </a>
                 </div>
 
-                <!-- User identity and Sign out (NO portal switcher!) -->
+                <!-- Desktop Navigation Links (Unified in Top Header) -->
+                <nav class="hidden md:flex items-center space-x-6 text-sm" aria-label="Main Navigation">
+                    <button onclick="switchTab('overview')" id="nav-btn-overview"
+                            class="flex items-center space-x-1.5 pb-1 transition-colors duration-150 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold">
+                        <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"></path></svg>
+                        <span>Dashboard</span>
+                    </button>
+                    <button onclick="switchTab('events')" id="nav-btn-events"
+                            class="flex items-center space-x-1.5 pb-1 transition-colors duration-150 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent">
+                        <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"></path></svg>
+                        <span>Events</span>
+                    </button>
+                    <button onclick="switchTab('students')" id="nav-btn-students"
+                            class="flex items-center space-x-1.5 pb-1 transition-colors duration-150 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent">
+                        <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"></path></svg>
+                        <span>Students</span>
+                    </button>
+                    <button onclick="switchTab('registrations')" id="nav-btn-registrations"
+                            class="flex items-center space-x-1.5 pb-1 transition-colors duration-150 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent">
+                        <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"></path></svg>
+                        <span>Registrations</span>
+                    </button>
+                </nav>
+
+                <!-- User identity and Sign out -->
                 <div class="flex items-center space-x-3 sm:space-x-4 flex-shrink-0">
                     <div class="flex items-center space-x-2">
-                        <span id="user-avatar" class="w-8 h-8 rounded-full bg-[#E0E7FF] text-[#1F3A5F] flex items-center justify-center font-bold text-xs tabular-nums flex-shrink-0">
+                        <span id="user-avatar" class="w-8 h-8 rounded-full bg-[#E0E7FF] text-[#1F3A5F] flex items-center justify-center font-bold text-xs tabular-nums flex-shrink-0" aria-label="User Avatar">
                             AD
                         </span>
                         <div class="hidden sm:block text-left text-xs">
@@ -96,27 +122,31 @@
                     <button onclick="signOut()" class="text-xs font-semibold text-[#9B1C1C] hover:underline px-2 py-1 rounded-[4px] border border-transparent hover:border-[#FED7D7] transition-colors">
                         Sign out
                     </button>
+
+                    <!-- Mobile Hamburger Button -->
+                    <button id="mobile-menu-btn" type="button" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu"
+                            class="md:hidden w-10 h-10 flex items-center justify-center text-[#4A5568] hover:text-[#1A202C] rounded-[4px] border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#1F3A5F]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path></svg>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Admin-Only Sub-Navigation -->
-        <nav class="border-t border-[#EDF2F7] bg-white" aria-label="Admin Navigation">
-            <div class="max-w-[1200px] mx-auto px-4 sm:px-6 flex items-center space-x-6 text-sm overflow-x-auto whitespace-nowrap scrollbar-none">
-                <button onclick="switchTab('overview')" id="tab-btn-overview" class="py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5 flex-shrink-0">
-                    <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"></path></svg>
-                    <span>Overview</span>
-                </button>
-                <button onclick="switchTab('events')" id="tab-btn-events" class="py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0">
-                    <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 9v7.5"></path></svg>
-                    <span>Events Management</span>
-                </button>
-                <button onclick="switchTab('students')" id="tab-btn-students" class="py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0">
-                    <svg class="w-4 h-4 text-current" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"></path></svg>
-                    <span>Students</span>
-                </button>
-            </div>
-        </nav>
+        <!-- Mobile Menu Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-[#E2E8F0] bg-white px-6 py-3 space-y-2 text-sm shadow-md">
+            <button onclick="switchTab('overview'); toggleMobileMenu(false);" id="m-nav-overview" class="w-full text-left block py-2 font-semibold text-[#1F3A5F]">
+                Dashboard
+            </button>
+            <button onclick="switchTab('events'); toggleMobileMenu(false);" id="m-nav-events" class="w-full text-left block py-2 text-[#4A5568] hover:text-[#1F3A5F]">
+                Events Management
+            </button>
+            <button onclick="switchTab('students'); toggleMobileMenu(false);" id="m-nav-students" class="w-full text-left block py-2 text-[#4A5568] hover:text-[#1F3A5F]">
+                Students Directory
+            </button>
+            <button onclick="switchTab('registrations'); toggleMobileMenu(false);" id="m-nav-registrations" class="w-full text-left block py-2 text-[#4A5568] hover:text-[#1F3A5F]">
+                Registrations Audit
+            </button>
+        </div>
     </header>
 
     <!-- Operational Alerts Region -->
@@ -130,9 +160,12 @@
             <div class="border-b border-[#E2E8F0] pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
                 <div>
                     <h1 class="font-serif text-xl sm:text-2xl font-semibold text-[#1A202C] tracking-tight">Dashboard Overview</h1>
-                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Operational metrics, event scheduling, and registration summary.</p>
+                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Operational metrics, event scheduling, and live registration summary.</p>
                 </div>
                 <div class="flex items-center space-x-3 self-start sm:self-auto">
+                    <button onclick="resetData()" class="text-xs text-[#718096] hover:text-[#1A202C] underline">
+                        Reset Demo Data
+                    </button>
                     <button onclick="switchTab('events')" class="h-9 px-3.5 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-xs font-semibold rounded-[4px] transition-colors">
                         Manage Events
                     </button>
@@ -148,13 +181,13 @@
                 </div>
                 <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-3.5 sm:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
                     <div class="text-xs sm:text-[13px] font-medium text-[#718096]">Students</div>
-                    <div id="stat-total-students" class="text-2xl sm:text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">4</div>
+                    <div id="stat-total-students" class="text-2xl sm:text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">0</div>
                     <div class="text-[11px] sm:text-xs text-[#718096] mt-1">Registered accounts</div>
                 </div>
                 <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-3.5 sm:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
                     <div class="text-xs sm:text-[13px] font-medium text-[#718096]">Active registrations</div>
                     <div id="stat-active-regs" class="text-2xl sm:text-[1.75rem] font-semibold text-[#1A202C] tabular-nums mt-0.5">0</div>
-                    <div class="text-[11px] sm:text-xs text-[#718096] mt-1">Confirmed seats</div>
+                    <div class="text-[11px] sm:text-xs text-[#718096] mt-1">Confirmed passes</div>
                 </div>
                 <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-3.5 sm:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
                     <div class="text-xs sm:text-[13px] font-medium text-[#718096]">Upcoming events</div>
@@ -163,9 +196,12 @@
                 </div>
             </div>
 
-            <!-- Popularity list -->
+            <!-- Seat Attendance by Event -->
             <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 sm:p-5 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
-                <h2 class="font-serif text-base font-semibold text-[#1A202C] mb-3.5">Seat Attendance by Event</h2>
+                <div class="flex items-center justify-between mb-3.5">
+                    <h2 class="font-serif text-base font-semibold text-[#1A202C]">Seat Attendance by Event</h2>
+                    <span class="text-xs text-[#718096]">Calculated from confirmed registrations</span>
+                </div>
                 <div id="admin-popularity-list" class="space-y-3.5 sm:space-y-4"></div>
             </div>
         </section>
@@ -175,9 +211,9 @@
             <div class="border-b border-[#E2E8F0] pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
                 <div>
                     <h1 class="font-serif text-xl sm:text-2xl font-semibold text-[#1A202C] tracking-tight">Events Management</h1>
-                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Add, monitor, or remove campus events and observe capacities.</p>
+                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Add, update, or remove campus events and monitor real-time capacity.</p>
                 </div>
-                <button onclick="promptCreateEvent()" class="h-9 px-3.5 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-xs font-semibold rounded-[4px] transition-colors self-start sm:self-auto">
+                <button onclick="openCreateEventModal()" class="h-9 px-3.5 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-xs font-semibold rounded-[4px] transition-colors self-start sm:self-auto">
                     + Create new event
                 </button>
             </div>
@@ -192,7 +228,7 @@
                                 <th class="py-3 px-4">Date</th>
                                 <th class="py-3 px-4">Venue</th>
                                 <th class="py-3 px-4 text-right">Fee</th>
-                                <th class="py-3 px-4 text-right">Capacity</th>
+                                <th class="py-3 px-4 text-right">Seats (Active/Cap)</th>
                                 <th class="py-3 px-4 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -210,8 +246,11 @@
             <div class="border-b border-[#E2E8F0] pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
                 <div>
                     <h1 class="font-serif text-xl sm:text-2xl font-semibold text-[#1A202C] tracking-tight">Students Directory</h1>
-                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Directory of registered students, roll numbers, and academic departments.</p>
+                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Directory of registered students, roll numbers, and active event passes.</p>
                 </div>
+                <button onclick="openCreateStudentModal()" class="h-9 px-3.5 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-xs font-semibold rounded-[4px] transition-colors self-start sm:self-auto">
+                    + Add new student
+                </button>
             </div>
 
             <!-- Desktop Table (>= 768px) -->
@@ -225,6 +264,7 @@
                                 <th class="py-3 px-4">Department</th>
                                 <th class="py-3 px-4">Email</th>
                                 <th class="py-3 px-4 text-right">Active passes</th>
+                                <th class="py-3 px-4 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="admin-students-tbody" class="divide-y divide-[#EDF2F7]"></tbody>
@@ -234,6 +274,70 @@
 
             <!-- Mobile Stacked Cards (< 768px) -->
             <div id="admin-students-mobile" class="md:hidden space-y-3"></div>
+        </section>
+
+        <!-- TAB 4: REGISTRATIONS AUDIT (Unified with Backend registration_list) -->
+        <section id="view-registrations" class="hidden space-y-5 sm:space-y-6">
+            <div class="border-b border-[#E2E8F0] pb-3 sm:pb-4 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
+                <div>
+                    <h1 class="font-serif text-xl sm:text-2xl font-semibold text-[#1A202C] tracking-tight">Registrations Audit</h1>
+                    <p class="text-xs sm:text-sm text-[#4A5568] mt-0.5 sm:mt-1">Review student event passes, filter by event/status, or process cancellations.</p>
+                </div>
+            </div>
+
+            <!-- Filters Toolbar -->
+            <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-3.5 sm:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)] space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+                    <div>
+                        <label for="reg-event-filter" class="block text-xs font-semibold text-[#4A5568] mb-1">Filter by Event</label>
+                        <select id="reg-event-filter" onchange="renderRegistrations()" class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] focus:outline-none focus:border-[#1F3A5F] cursor-pointer">
+                            <option value="all">All Events</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="reg-status-filter" class="block text-xs font-semibold text-[#4A5568] mb-1">Filter by Status</label>
+                        <select id="reg-status-filter" onchange="renderRegistrations()" class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] focus:outline-none focus:border-[#1F3A5F] cursor-pointer">
+                            <option value="all">All Statuses</option>
+                            <option value="registered">Registered (Active)</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="reg-search-input" class="block text-xs font-semibold text-[#4A5568] mb-1">Search Student / Roll</label>
+                        <input id="reg-search-input" type="text" oninput="renderRegistrations()" placeholder="Search by name, roll, or event..."
+                               class="w-full h-10 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] text-[#1A202C] placeholder-[#718096] focus:outline-none focus:border-[#1F3A5F]">
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-[#EDF2F7] flex items-center justify-between">
+                    <div id="reg-summary-badge" class="text-xs text-[#718096] font-medium">Total: 0 | Active: 0 | Cancelled: 0</div>
+                    <button type="button" onclick="resetRegFilters()" class="text-xs text-[#1F3A5F] hover:underline font-semibold">Reset filters</button>
+                </div>
+            </div>
+
+            <!-- Desktop Table (>= 768px) -->
+            <div class="hidden md:block bg-white border border-[#E2E8F0] rounded-[6px] overflow-hidden shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm" role="table">
+                        <thead class="bg-[#F7F8FA] border-b border-[#E2E8F0] text-[13px] font-semibold text-[#4A5568]">
+                            <tr>
+                                <th class="py-3 px-4">Reg ID</th>
+                                <th class="py-3 px-4">Student</th>
+                                <th class="py-3 px-4">Roll number</th>
+                                <th class="py-3 px-4">Department</th>
+                                <th class="py-3 px-4">Event title</th>
+                                <th class="py-3 px-4">Reg Date</th>
+                                <th class="py-3 px-4 text-center">Status</th>
+                                <th class="py-3 px-4 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-registrations-tbody" class="divide-y divide-[#EDF2F7]"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mobile Stacked Cards (< 768px) -->
+            <div id="admin-registrations-mobile" class="md:hidden space-y-3"></div>
         </section>
 
     </main>
@@ -246,114 +350,179 @@
         </div>
     </footer>
 
-    <!-- Interactive Client-side Script -->
+    <!-- ================================================================= -->
+    <!-- MODAL 1: Create / Edit Event Dialog (Replaces prompt())           -->
+    <!-- ================================================================= -->
+    <div id="event-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/50 flex items-center justify-center p-4">
+        <div class="bg-white border border-[#E2E8F0] rounded-[6px] max-w-lg w-full p-6 shadow-xl relative animate-fade-in">
+            <div class="flex items-center justify-between border-b border-[#EDF2F7] pb-3 mb-4">
+                <h3 id="event-modal-title" class="font-serif text-lg font-semibold text-[#1A202C]">Create Event</h3>
+                <button type="button" onclick="closeEventModal()" class="text-[#718096] hover:text-[#1A202C] text-xl font-bold leading-none">&times;</button>
+            </div>
+
+            <!-- Modal Inline Error -->
+            <div id="event-modal-error" class="hidden mb-3 p-2.5 rounded-[4px] bg-[#FDECEC] border border-[#FED7D7] text-[#9B1C1C] text-xs font-medium"></div>
+
+            <form id="event-form" onsubmit="handleSaveEvent(event)" class="space-y-3.5">
+                <input type="hidden" id="event-form-id" value="">
+
+                <div>
+                    <label for="event-field-title" class="block text-xs font-semibold text-[#1A202C] mb-1">Title *</label>
+                    <input type="text" id="event-field-title" required class="w-full h-9 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] focus:outline-none focus:border-[#1F3A5F]" placeholder="e.g. AI & Machine Learning Hackathon">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="event-field-category" class="block text-xs font-semibold text-[#1A202C] mb-1">Category *</label>
+                        <select id="event-field-category" required class="w-full h-9 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] focus:outline-none focus:border-[#1F3A5F]">
+                            <option value="Technical">Technical</option>
+                            <option value="Cultural">Cultural</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Workshop">Workshop</option>
+                            <option value="Seminar">Seminar</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="event-field-date" class="block text-xs font-semibold text-[#1A202C] mb-1">Event Date *</label>
+                        <input type="date" id="event-field-date" required class="w-full h-9 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] focus:outline-none focus:border-[#1F3A5F]">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="event-field-venue" class="block text-xs font-semibold text-[#1A202C] mb-1">Venue *</label>
+                    <input type="text" id="event-field-venue" required class="w-full h-9 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] focus:outline-none focus:border-[#1F3A5F]" placeholder="e.g. Turing Auditorium">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="event-field-fee" class="block text-xs font-semibold text-[#1A202C] mb-1">Registration Fee (₹) *</label>
+                        <input type="number" id="event-field-fee" min="0" step="0.5" required class="w-full h-9 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] focus:outline-none focus:border-[#1F3A5F]" placeholder="0">
+                    </div>
+                    <div>
+                        <label for="event-field-capacity" class="block text-xs font-semibold text-[#1A202C] mb-1">Capacity (Seats) *</label>
+                        <input type="number" id="event-field-capacity" min="1" step="1" required class="w-full h-9 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] focus:outline-none focus:border-[#1F3A5F]" placeholder="50">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="event-field-description" class="block text-xs font-semibold text-[#1A202C] mb-1">Description</label>
+                    <textarea id="event-field-description" rows="3" class="w-full p-2.5 text-sm bg-white border border-[#CBD5E0] rounded-[4px] focus:outline-none focus:border-[#1F3A5F]" placeholder="Event agenda, requirements, and highlights..."></textarea>
+                </div>
+
+                <div class="pt-2 flex items-center justify-end space-x-2 border-t border-[#EDF2F7]">
+                    <button type="button" onclick="closeEventModal()" class="px-3.5 py-2 text-xs font-semibold text-[#4A5568] hover:bg-[#EDF2F7] rounded-[4px] transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-xs font-semibold rounded-[4px] transition-colors">
+                        Save Event
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- MODAL 2: Create / Edit Student Dialog                             -->
+    <!-- ================================================================= -->
+    <div id="student-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/50 flex items-center justify-center p-4">
+        <div class="bg-white border border-[#E2E8F0] rounded-[6px] max-w-md w-full p-6 shadow-xl relative animate-fade-in">
+            <div class="flex items-center justify-between border-b border-[#EDF2F7] pb-3 mb-4">
+                <h3 id="student-modal-title" class="font-serif text-lg font-semibold text-[#1A202C]">Add Student</h3>
+                <button type="button" onclick="closeStudentModal()" class="text-[#718096] hover:text-[#1A202C] text-xl font-bold leading-none">&times;</button>
+            </div>
+
+            <!-- Modal Inline Error -->
+            <div id="student-modal-error" class="hidden mb-3 p-2.5 rounded-[4px] bg-[#FDECEC] border border-[#FED7D7] text-[#9B1C1C] text-xs font-medium"></div>
+
+            <form id="student-form" onsubmit="handleSaveStudent(event)" class="space-y-3.5">
+                <input type="hidden" id="student-form-id" value="">
+
+                <div>
+                    <label for="student-field-name" class="block text-xs font-semibold text-[#1A202C] mb-1">Full Name *</label>
+                    <input type="text" id="student-field-name" required class="w-full h-9 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] focus:outline-none focus:border-[#1F3A5F]" placeholder="e.g. Alice Sharma">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="student-field-username" class="block text-xs font-semibold text-[#1A202C] mb-1">Username *</label>
+                        <input type="text" id="student-field-username" required class="w-full h-9 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] focus:outline-none focus:border-[#1F3A5F]" placeholder="e.g. alice">
+                    </div>
+                    <div>
+                        <label for="student-field-roll" class="block text-xs font-semibold text-[#1A202C] mb-1">Roll Number *</label>
+                        <input type="text" id="student-field-roll" required class="w-full h-9 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] focus:outline-none focus:border-[#1F3A5F]" placeholder="e.g. CS2026-001">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="student-field-dept" class="block text-xs font-semibold text-[#1A202C] mb-1">Department *</label>
+                    <select id="student-field-dept" required class="w-full h-9 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] focus:outline-none focus:border-[#1F3A5F]">
+                        <option value="Computer Engineering">Computer Engineering</option>
+                        <option value="Information Technology">Information Technology</option>
+                        <option value="Artificial Intelligence & Data Science">Artificial Intelligence & Data Science</option>
+                        <option value="Electronics & Telecommunication">Electronics & Telecommunication</option>
+                        <option value="Mechanical Engineering">Mechanical Engineering</option>
+                        <option value="Civil Engineering">Civil Engineering</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="student-field-email" class="block text-xs font-semibold text-[#1A202C] mb-1">Email (Optional)</label>
+                    <input type="email" id="student-field-email" class="w-full h-9 px-3 text-sm bg-white border border-[#CBD5E0] rounded-[4px] focus:outline-none focus:border-[#1F3A5F]" placeholder="e.g. alice@college.edu">
+                </div>
+
+                <div class="pt-2 flex items-center justify-end space-x-2 border-t border-[#EDF2F7]">
+                    <button type="button" onclick="closeStudentModal()" class="px-3.5 py-2 text-xs font-semibold text-[#4A5568] hover:bg-[#EDF2F7] rounded-[4px] transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-[#1F3A5F] hover:bg-[#162B47] text-white text-xs font-semibold rounded-[4px] transition-colors">
+                        Save Student
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Application Script -->
     <script>
-        const STORAGE_KEY_EVENTS = "cems_events_v1";
-        const STORAGE_KEY_REGS = "cems_registrations_v1";
-
-        const DEFAULT_STUDENTS = [
-            { name: "Alice Sharma", roll: "CS2026-001", dept: "Computer Engineering", email: "alice@college.edu" },
-            { name: "Bob Patel", roll: "IT2026-014", dept: "Information Technology", email: "bob@college.edu" },
-            { name: "Charlie Gupta", roll: "AI2026-022", dept: "Artificial Intelligence & Data Science", email: "charlie@college.edu" },
-            { name: "Diana Dsouza", roll: "EXTC2026-035", dept: "Electronics & Telecommunication", email: "diana@college.edu" }
-        ];
-
-        function getInitialEvents() {
-            const today = new Date();
-            const addDays = (d, n) => {
-                const copy = new Date(d);
-                copy.setDate(copy.getDate() + n);
-                return copy.toISOString().split("T")[0];
-            };
-
-            return [
-                {
-                    id: 1,
-                    title: "AI & Machine Learning 24h Hackathon",
-                    category: "Technical",
-                    event_date: addDays(today, 10),
-                    venue: "Main Turing Auditorium & Lab 401",
-                    description: "24-hour flagship hackathon solving real-world challenges in GenAI, autonomous systems, and edge computing.",
-                    fee: 0,
-                    capacity: 60,
-                    registered_count: 52
-                },
-                {
-                    id: 2,
-                    title: "Aura 2026: Annual Cultural Fiesta",
-                    category: "Cultural",
-                    event_date: addDays(today, 18),
-                    venue: "Open Air Amphitheatre",
-                    description: "The campus's biggest cultural extravaganza featuring music battles, classical and modern dance competitions.",
-                    fee: 150,
-                    capacity: 150,
-                    registered_count: 114
-                },
-                {
-                    id: 3,
-                    title: "Inter-College 7-a-Side Football Cup",
-                    category: "Sports",
-                    event_date: addDays(today, 25),
-                    venue: "University Sports Complex Turf",
-                    description: "High-octane knockouts with teams from across state colleges. Official referees, trophies, and cash prizes.",
-                    fee: 50,
-                    capacity: 80,
-                    registered_count: 68
-                },
-                {
-                    id: 4,
-                    title: "Cloud Native & DevOps Hands-on Bootcamp",
-                    category: "Workshop",
-                    event_date: addDays(today, 14),
-                    venue: "Seminar Hall B & Hybrid Live Stream",
-                    description: "Deep-dive workshop on Docker containers, Kubernetes orchestrations, Terraform, and GitHub Actions CI/CD pipelines.",
-                    fee: 99,
-                    capacity: 45,
-                    registered_count: 41
-                },
-                {
-                    id: 5,
-                    title: "Big Tech Career & System Design Seminar",
-                    category: "Seminar",
-                    event_date: addDays(today, 32),
-                    venue: "Executive Conference Hall 1",
-                    description: "Alumni keynote speakers from Google, Microsoft, and Uber discussing technical interviews and scalable system design.",
-                    fee: 0,
-                    capacity: 120,
-                    registered_count: 95
-                },
-                {
-                    id: 6,
-                    title: "Autonomous Drone & Robotics Expo",
-                    category: "Workshop",
-                    event_date: addDays(today, -20),
-                    venue: "Robotics Lab & Indoor Field",
-                    description: "Hands-on flight controller programming and autonomous navigation demo. Successfully concluded.",
-                    fee: 120,
-                    capacity: 40,
-                    registered_count: 40
-                }
-            ];
-        }
-
         let events = [];
         let registrations = [];
+        let students = [];
+        let currentTab = "overview";
 
         function loadState() {
             try {
                 const savedEvents = localStorage.getItem(STORAGE_KEY_EVENTS);
                 events = savedEvents ? JSON.parse(savedEvents) : getInitialEvents();
+
                 const savedRegs = localStorage.getItem(STORAGE_KEY_REGS);
-                registrations = savedRegs ? JSON.parse(savedRegs) : [];
+                registrations = savedRegs ? JSON.parse(savedRegs) : getInitialRegistrations();
+
+                const savedStudents = localStorage.getItem(STORAGE_KEY_STUDENTS);
+                students = savedStudents ? JSON.parse(savedStudents) : DEFAULT_STUDENTS;
             } catch (e) {
                 events = getInitialEvents();
-                registrations = [];
+                registrations = getInitialRegistrations();
+                students = DEFAULT_STUDENTS;
             }
         }
 
         function saveState() {
             localStorage.setItem(STORAGE_KEY_EVENTS, JSON.stringify(events));
             localStorage.setItem(STORAGE_KEY_REGS, JSON.stringify(registrations));
+            localStorage.setItem(STORAGE_KEY_STUDENTS, JSON.stringify(students));
+        }
+
+        function resetData() {
+            if (confirm("Reset demo events, students, and registrations back to defaults?")) {
+                localStorage.removeItem(STORAGE_KEY_EVENTS);
+                localStorage.removeItem(STORAGE_KEY_REGS);
+                localStorage.removeItem(STORAGE_KEY_STUDENTS);
+                loadState();
+                showAlert("Demo database restored to default seed state.", "success");
+                renderCurrentTab();
+            }
         }
 
         function showAlert(msg, type = "success") {
@@ -364,7 +533,7 @@
                 isSuccess ? "bg-[#E6F4EA] border-[#C6F6D5] text-[#276749]" : "bg-[#FDECEC] border-[#FED7D7] text-[#9B1C1C]"
             }`;
             alert.innerHTML = `
-                <div class="pr-2 leading-relaxed font-medium">${msg}</div>
+                <div class="pr-2 leading-relaxed font-medium">${escapeHtml(msg)}</div>
                 <button type="button" onclick="this.parentElement.remove()" class="text-current hover:opacity-75 ml-2 text-base leading-none font-bold">&times;</button>
             `;
             container.appendChild(alert);
@@ -374,55 +543,87 @@
             }, 4000);
         }
 
-        function isPast(dateStr) {
-            return new Date(dateStr) < new Date(new Date().toDateString());
+        // Active count computed dynamically
+        function getEventActiveCount(eventId) {
+            return registrations.filter(r => Number(r.event_id) === Number(eventId) && r.status === "registered").length;
         }
 
-        function formatFee(fee) {
-            return Number(fee) === 0 ? "Free" : `₹${Math.round(fee)}`;
-        }
-
-        function formatDate(dateStr) {
-            const d = new Date(dateStr);
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        function toggleMobileMenu(force) {
+            const menu = document.getElementById("mobile-menu");
+            if (typeof force === "boolean") {
+                if (force) menu.classList.remove("hidden");
+                else menu.classList.add("hidden");
+            } else {
+                menu.classList.toggle("hidden");
+            }
         }
 
         function switchTab(tab) {
-            ["overview", "events", "students"].forEach(t => {
+            currentTab = tab;
+            const tabs = ["overview", "events", "students", "registrations"];
+
+            tabs.forEach(t => {
                 const el = document.getElementById(`view-${t}`);
-                const btn = document.getElementById(`tab-btn-${t}`);
+                const navBtn = document.getElementById(`nav-btn-${t}`);
+                const mNavBtn = document.getElementById(`m-nav-${t}`);
+
                 if (t === tab) {
-                    el.classList.remove("hidden");
-                    btn.className = "py-2.5 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold flex items-center space-x-1.5 flex-shrink-0";
+                    if (el) el.classList.remove("hidden");
+                    if (navBtn) {
+                        navBtn.className = "flex items-center space-x-1.5 pb-1 transition-colors duration-150 text-[#1F3A5F] border-b-2 border-[#1F3A5F] font-semibold";
+                    }
+                    if (mNavBtn) {
+                        mNavBtn.className = "w-full text-left block py-2 font-semibold text-[#1F3A5F]";
+                    }
                 } else {
-                    btn.className = "py-2.5 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent transition-colors flex items-center space-x-1.5 flex-shrink-0";
+                    if (el) el.classList.add("hidden");
+                    if (navBtn) {
+                        navBtn.className = "flex items-center space-x-1.5 pb-1 transition-colors duration-150 text-[#4A5568] hover:text-[#1A202C] border-b-2 border-transparent";
+                    }
+                    if (mNavBtn) {
+                        mNavBtn.className = "w-full text-left block py-2 text-[#4A5568] hover:text-[#1F3A5F]";
+                    }
                 }
             });
 
-            if (tab === "overview") renderOverview();
-            if (tab === "events") renderEvents();
-            if (tab === "students") renderStudents();
+            renderCurrentTab();
         }
 
+        function renderCurrentTab() {
+            if (currentTab === "overview") renderOverview();
+            else if (currentTab === "events") renderEvents();
+            else if (currentTab === "students") renderStudents();
+            else if (currentTab === "registrations") renderRegistrations();
+        }
+
+        // =================================================================
+        // OVERVIEW TAB
+        // =================================================================
         function renderOverview() {
             document.getElementById("stat-total-events").textContent = events.length;
-            document.getElementById("stat-total-students").textContent = DEFAULT_STUDENTS.length;
+            document.getElementById("stat-total-students").textContent = students.length;
 
-            const activeRegs = events.reduce((sum, e) => sum + e.registered_count, 0);
+            const activeRegs = registrations.filter(r => r.status === "registered").length;
             document.getElementById("stat-active-regs").textContent = activeRegs;
 
             const upcomingCount = events.filter(e => !isPast(e.event_date)).length;
             document.getElementById("stat-upcoming-events").textContent = upcomingCount;
 
             const popContainer = document.getElementById("admin-popularity-list");
+            if (events.length === 0) {
+                popContainer.innerHTML = `<div class="text-xs text-[#718096] italic">No events currently scheduled.</div>`;
+                return;
+            }
+
             popContainer.innerHTML = events.map(ev => {
-                const pct = Math.min(100, Math.round((ev.registered_count / ev.capacity) * 100));
+                const active = getEventActiveCount(ev.id);
+                const cap = Number(ev.capacity) || 1;
+                const pct = Math.min(100, Math.round((active / cap) * 100));
                 return `
                     <div>
                         <div class="flex items-center justify-between text-xs mb-1 gap-2">
-                            <span class="font-medium text-[#1A202C] truncate">${ev.title}</span>
-                            <span class="text-[#718096] tabular-nums flex-shrink-0">${ev.registered_count} / ${ev.capacity} (${pct}%)</span>
+                            <span class="font-medium text-[#1A202C] truncate">${escapeHtml(ev.title)}</span>
+                            <span class="text-[#718096] tabular-nums flex-shrink-0">${active} / ${cap} (${pct}%)</span>
                         </div>
                         <div class="w-full bg-[#EDF2F7] rounded-full h-2 overflow-hidden">
                             <div class="bg-[#1F3A5F] h-2 rounded-full" style="width: ${pct}%;"></div>
@@ -432,26 +633,44 @@
             }).join("");
         }
 
+        // =================================================================
+        // EVENTS MANAGEMENT TAB
+        // =================================================================
         function renderEvents() {
             const tbody = document.getElementById("admin-events-tbody");
             const mobileContainer = document.getElementById("admin-events-mobile");
 
+            if (events.length === 0) {
+                const emptyRow = `<tr><td colspan="6" class="py-6 text-center text-xs text-[#718096] italic">No events found. Click "+ Create new event" to schedule one.</td></tr>`;
+                tbody.innerHTML = emptyRow;
+                mobileContainer.innerHTML = `<div class="bg-white border border-[#E2E8F0] rounded-[6px] p-6 text-center text-xs text-[#718096] italic">No events found.</div>`;
+                return;
+            }
+
             // Desktop Table
             tbody.innerHTML = events.map(ev => {
+                const active = getEventActiveCount(ev.id);
+                const isEventPast = isPast(ev.event_date);
                 return `
                     <tr class="hover:bg-[#F7F8FA] transition-colors">
                         <td class="py-3.5 px-4">
-                            <div class="font-medium text-[#1A202C]">${ev.title}</div>
-                            <div class="text-xs text-[#718096] mt-0.5">${ev.category}</div>
+                            <div class="font-medium text-[#1A202C]">${escapeHtml(ev.title)}</div>
+                            <div class="text-xs text-[#718096] mt-0.5 flex items-center space-x-1.5">
+                                <span>${escapeHtml(ev.category)}</span>
+                                ${isEventPast ? '<span class="badge badge-neutral text-[10px] h-4 px-1.5">Concluded</span>' : ''}
+                            </div>
                         </td>
                         <td class="py-3.5 px-4 tabular-nums text-[#4A5568] whitespace-nowrap">${formatDate(ev.event_date)}</td>
-                        <td class="py-3.5 px-4 text-[#4A5568]">${ev.venue}</td>
+                        <td class="py-3.5 px-4 text-[#4A5568] max-w-[200px] truncate">${escapeHtml(ev.venue)}</td>
                         <td class="py-3.5 px-4 text-right tabular-nums text-[#4A5568] whitespace-nowrap">${formatFee(ev.fee)}</td>
                         <td class="py-3.5 px-4 text-right tabular-nums text-[#4A5568] whitespace-nowrap">
-                            ${ev.registered_count} / ${ev.capacity}
+                            <span class="font-semibold text-[#1A202C]">${active}</span> / ${ev.capacity}
                         </td>
-                        <td class="py-3.5 px-4 text-right whitespace-nowrap">
-                            <button onclick="adminDeleteEvent(${ev.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline p-1">
+                        <td class="py-3.5 px-4 text-right whitespace-nowrap space-x-2">
+                            <button type="button" onclick="openEditEventModal(${ev.id})" class="text-xs font-semibold text-[#1F3A5F] hover:underline p-1">
+                                Edit
+                            </button>
+                            <button type="button" onclick="adminDeleteEvent(${ev.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline p-1">
                                 Delete
                             </button>
                         </td>
@@ -461,21 +680,28 @@
 
             // Mobile Cards
             mobileContainer.innerHTML = events.map(ev => {
+                const active = getEventActiveCount(ev.id);
+                const pct = Math.min(100, Math.round((active / (Number(ev.capacity) || 1)) * 100));
                 return `
                     <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 space-y-2.5 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
                         <div class="flex items-start justify-between gap-2">
                             <div>
-                                <h3 class="font-serif text-base font-semibold text-[#1A202C]">${ev.title}</h3>
-                                <div class="text-xs text-[#718096] mt-0.5">${ev.category} &middot; ${formatDate(ev.event_date)}</div>
+                                <h3 class="font-serif text-base font-semibold text-[#1A202C]">${escapeHtml(ev.title)}</h3>
+                                <div class="text-xs text-[#718096] mt-0.5">${escapeHtml(ev.category)} &middot; ${formatDate(ev.event_date)}</div>
                             </div>
-                            <button onclick="adminDeleteEvent(${ev.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline p-1 flex-shrink-0">
-                                Delete
-                            </button>
+                            <div class="flex items-center space-x-1 flex-shrink-0">
+                                <button type="button" onclick="openEditEventModal(${ev.id})" class="text-xs font-semibold text-[#1F3A5F] hover:underline p-1">
+                                    Edit
+                                </button>
+                                <button type="button" onclick="adminDeleteEvent(${ev.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline p-1">
+                                    Delete
+                                </button>
+                            </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-[#EDF2F7]">
                             <div>
                                 <span class="text-[#718096]">Venue:</span>
-                                <span class="font-medium text-[#1A202C] ml-1">${ev.venue}</span>
+                                <span class="font-medium text-[#1A202C] ml-1">${escapeHtml(ev.venue)}</span>
                             </div>
                             <div class="text-right">
                                 <span class="text-[#718096]">Fee:</span>
@@ -485,10 +711,10 @@
                         <div class="text-xs pt-1">
                             <div class="flex justify-between text-[#718096] mb-1">
                                 <span>Seats filled</span>
-                                <span class="tabular-nums font-medium text-[#1A202C]">${ev.registered_count} / ${ev.capacity}</span>
+                                <span class="tabular-nums font-medium text-[#1A202C]">${active} / ${ev.capacity} (${pct}%)</span>
                             </div>
                             <div class="w-full bg-[#EDF2F7] rounded-full h-1.5 overflow-hidden">
-                                <div class="bg-[#1F3A5F] h-1.5 rounded-full" style="width: ${Math.round((ev.registered_count / ev.capacity) * 100)}%;"></div>
+                                <div class="bg-[#1F3A5F] h-1.5 rounded-full" style="width: ${pct}%;"></div>
                             </div>
                         </div>
                     </div>
@@ -496,11 +722,148 @@
             }).join("");
         }
 
+        // =================================================================
+        // EVENT MODAL & CRUD
+        // =================================================================
+        function openCreateEventModal() {
+            document.getElementById("event-modal-title").textContent = "Create New Event";
+            document.getElementById("event-modal-error").classList.add("hidden");
+            document.getElementById("event-form-id").value = "";
+            document.getElementById("event-field-title").value = "";
+            document.getElementById("event-field-category").value = "Technical";
+
+            const defaultDate = new Date();
+            defaultDate.setDate(defaultDate.getDate() + 14);
+            const y = defaultDate.getFullYear();
+            const m = String(defaultDate.getMonth() + 1).padStart(2, "0");
+            const d = String(defaultDate.getDate()).padStart(2, "0");
+            document.getElementById("event-field-date").value = `${y}-${m}-${d}`;
+
+            document.getElementById("event-field-venue").value = "Main Campus Auditorium";
+            document.getElementById("event-field-fee").value = "0";
+            document.getElementById("event-field-capacity").value = "50";
+            document.getElementById("event-field-description").value = "";
+
+            document.getElementById("event-modal").classList.remove("hidden");
+        }
+
+        function openEditEventModal(id) {
+            const ev = events.find(e => e.id === id);
+            if (!ev) return;
+
+            document.getElementById("event-modal-title").textContent = "Edit Event Details";
+            document.getElementById("event-modal-error").classList.add("hidden");
+            document.getElementById("event-form-id").value = ev.id;
+            document.getElementById("event-field-title").value = ev.title;
+            document.getElementById("event-field-category").value = ev.category;
+            document.getElementById("event-field-date").value = ev.event_date;
+            document.getElementById("event-field-venue").value = ev.venue;
+            document.getElementById("event-field-fee").value = ev.fee;
+            document.getElementById("event-field-capacity").value = ev.capacity;
+            document.getElementById("event-field-description").value = ev.description || "";
+
+            document.getElementById("event-modal").classList.remove("hidden");
+        }
+
+        function closeEventModal() {
+            document.getElementById("event-modal").classList.add("hidden");
+        }
+
+        function handleSaveEvent(e) {
+            e.preventDefault();
+            const idVal = document.getElementById("event-form-id").value;
+            const isEdit = Boolean(idVal);
+            const errEl = document.getElementById("event-modal-error");
+
+            const title = document.getElementById("event-field-title").value.trim();
+            const category = document.getElementById("event-field-category").value;
+            const event_date = document.getElementById("event-field-date").value;
+            const venue = document.getElementById("event-field-venue").value.trim();
+            const fee = parseFloat(document.getElementById("event-field-fee").value) || 0;
+            const capacity = parseInt(document.getElementById("event-field-capacity").value, 10);
+            const description = document.getElementById("event-field-description").value.trim();
+
+            if (!title || !event_date || !venue) {
+                errEl.textContent = "Please fill in all required fields.";
+                errEl.classList.remove("hidden");
+                return;
+            }
+
+            if (capacity < 1) {
+                errEl.textContent = "Capacity must be at least 1 seat.";
+                errEl.classList.remove("hidden");
+                return;
+            }
+
+            if (fee < 0) {
+                errEl.textContent = "Fee cannot be negative.";
+                errEl.classList.remove("hidden");
+                return;
+            }
+
+            let existingEvent = null;
+            if (isEdit) {
+                const numId = Number(idVal);
+                existingEvent = events.find(item => item.id === numId);
+                if (existingEvent) {
+                    const activeCount = getEventActiveCount(numId);
+                    if (capacity < activeCount) {
+                        errEl.textContent = `Capacity cannot be reduced below current active registrations (${activeCount}).`;
+                        errEl.classList.remove("hidden");
+                        return;
+                    }
+                    // If date changed, cannot set to past
+                    if (existingEvent.event_date !== event_date && isPast(event_date)) {
+                        errEl.textContent = "New event date cannot be in the past.";
+                        errEl.classList.remove("hidden");
+                        return;
+                    }
+                }
+            } else {
+                if (isPast(event_date)) {
+                    errEl.textContent = "Event date cannot be in the past for new events.";
+                    errEl.classList.remove("hidden");
+                    return;
+                }
+            }
+
+            if (isEdit && existingEvent) {
+                existingEvent.title = title;
+                existingEvent.category = category;
+                existingEvent.event_date = event_date;
+                existingEvent.venue = venue;
+                existingEvent.fee = fee;
+                existingEvent.capacity = capacity;
+                existingEvent.description = description;
+                showAlert(`Event '${title}' updated successfully.`);
+            } else {
+                const newEv = {
+                    id: Date.now(),
+                    title,
+                    category,
+                    event_date,
+                    venue,
+                    fee,
+                    capacity,
+                    description
+                };
+                events.unshift(newEv);
+                showAlert(`Created new event '${title}'.`);
+            }
+
+            saveState();
+            closeEventModal();
+            renderEvents();
+            renderOverview();
+            populateEventFilterDropdown();
+        }
+
         function adminDeleteEvent(id) {
             const ev = events.find(e => e.id === id);
             if (!ev) return;
-            if (ev.registered_count > 0) {
-                alert(`Cannot delete '${ev.title}' because it has ${ev.registered_count} active registration(s).`);
+            const active = getEventActiveCount(id);
+            if (active > 0) {
+                alert(`Cannot delete '${ev.title}' because it has ${active} active registration(s).`);
                 return;
             }
             if (confirm(`Delete event '${ev.title}'?`)) {
@@ -509,89 +872,352 @@
                 showAlert(`Event '${ev.title}' deleted.`);
                 renderEvents();
                 renderOverview();
+                populateEventFilterDropdown();
             }
         }
 
-        function promptCreateEvent() {
-            const title = prompt("Enter event title:");
-            if (!title) return;
-            const category = prompt("Enter category (Technical, Cultural, Sports, Workshop, Seminar):", "Technical") || "Technical";
-            const venue = prompt("Enter venue:", "Main Campus Auditorium") || "Campus Hall";
-            const capacity = parseInt(prompt("Enter capacity (seats):", "60"), 10) || 50;
-
-            const newEvent = {
-                id: Date.now(),
-                title,
-                category,
-                event_date: new Date(Date.now() + 7 * 86400000).toISOString().split("T")[0],
-                venue,
-                description: "Campus organized event for student participation.",
-                fee: 0,
-                capacity,
-                registered_count: 0
-            };
-
-            events.unshift(newEvent);
-            saveState();
-            showAlert(`Created new event '${title}'.`);
-            renderEvents();
-            renderOverview();
-        }
-
+        // =================================================================
+        // STUDENTS DIRECTORY TAB & CRUD
+        // =================================================================
         function renderStudents() {
             const tbody = document.getElementById("admin-students-tbody");
             const mobileContainer = document.getElementById("admin-students-mobile");
 
-            // Desktop Table
-            tbody.innerHTML = DEFAULT_STUDENTS.map(st => {
-                const count = registrations.filter(r => r.user === st.name && r.status === "registered").length;
+            if (students.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-xs text-[#718096] italic">No students found.</td></tr>`;
+                mobileContainer.innerHTML = `<div class="bg-white border border-[#E2E8F0] rounded-[6px] p-6 text-center text-xs text-[#718096] italic">No students found.</div>`;
+                return;
+            }
+
+            tbody.innerHTML = students.map(st => {
+                const activePasses = registrations.filter(r => (r.username === st.username || r.user === st.name) && r.status === "registered").length;
                 return `
                     <tr class="hover:bg-[#F7F8FA] transition-colors">
-                        <td class="py-3.5 px-4 font-medium text-[#1A202C]">${st.name}</td>
-                        <td class="py-3.5 px-4 tabular-nums text-[#4A5568]">${st.roll}</td>
-                        <td class="py-3.5 px-4 text-[#4A5568]">${st.dept}</td>
-                        <td class="py-3.5 px-4 text-[#4A5568]">${st.email}</td>
-                        <td class="py-3.5 px-4 text-right tabular-nums text-[#4A5568]">${count}</td>
+                        <td class="py-3.5 px-4 font-medium text-[#1A202C]">${escapeHtml(st.name)}</td>
+                        <td class="py-3.5 px-4 tabular-nums text-[#4A5568]">${escapeHtml(st.roll_no || st.roll || "N/A")}</td>
+                        <td class="py-3.5 px-4 text-[#4A5568]">${escapeHtml(st.department || st.dept || "General")}</td>
+                        <td class="py-3.5 px-4 text-[#4A5568] text-xs">${escapeHtml(st.email || "—")}</td>
+                        <td class="py-3.5 px-4 text-right tabular-nums text-[#4A5568] font-semibold">${activePasses}</td>
+                        <td class="py-3.5 px-4 text-right whitespace-nowrap space-x-2">
+                            <button type="button" onclick="openEditStudentModal(${st.id})" class="text-xs font-semibold text-[#1F3A5F] hover:underline p-1">
+                                Edit
+                            </button>
+                            <button type="button" onclick="adminDeleteStudent(${st.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline p-1">
+                                Delete
+                            </button>
+                        </td>
                     </tr>
                 `;
             }).join("");
 
-            // Mobile Cards
-            mobileContainer.innerHTML = DEFAULT_STUDENTS.map(st => {
-                const count = registrations.filter(r => r.user === st.name && r.status === "registered").length;
-                const initials = st.name.split(" ").map(w => w[0]).join("").toUpperCase();
+            mobileContainer.innerHTML = students.map(st => {
+                const activePasses = registrations.filter(r => (r.username === st.username || r.user === st.name) && r.status === "registered").length;
+                const initials = getInitials(st.name);
                 return `
                     <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 flex items-center justify-between shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
                         <div class="flex items-center space-x-3 min-w-0 pr-2">
                             <div class="w-9 h-9 rounded-full bg-[#E0E7FF] text-[#1F3A5F] font-bold text-xs flex items-center justify-center flex-shrink-0">
-                                ${initials}
+                                ${escapeHtml(initials)}
                             </div>
                             <div class="min-w-0">
-                                <div class="font-medium text-sm text-[#1A202C] truncate">${st.name}</div>
-                                <div class="text-xs text-[#718096] truncate">${st.roll} &middot; ${st.dept}</div>
+                                <div class="font-medium text-sm text-[#1A202C] truncate">${escapeHtml(st.name)}</div>
+                                <div class="text-xs text-[#718096] truncate">${escapeHtml(st.roll_no || st.roll || "N/A")} &middot; ${escapeHtml(st.department || st.dept || "General")}</div>
                             </div>
                         </div>
-                        <div class="text-right flex-shrink-0">
+                        <div class="flex items-center space-x-2 flex-shrink-0">
                             <span class="text-xs font-semibold px-2 py-1 bg-[#EDF2F7] text-[#1F3A5F] rounded-[4px] tabular-nums">
-                                ${count} pass${count === 1 ? '' : 'es'}
+                                ${activePasses} pass${activePasses === 1 ? '' : 'es'}
                             </span>
+                            <button type="button" onclick="openEditStudentModal(${st.id})" class="text-xs text-[#1F3A5F] hover:underline p-1">Edit</button>
+                            <button type="button" onclick="adminDeleteStudent(${st.id})" class="text-xs text-[#9B1C1C] hover:underline p-1">Delete</button>
                         </div>
                     </div>
                 `;
             }).join("");
         }
 
-        // Initialize user header info and data
+        function openCreateStudentModal() {
+            document.getElementById("student-modal-title").textContent = "Add New Student";
+            document.getElementById("student-modal-error").classList.add("hidden");
+            document.getElementById("student-form-id").value = "";
+            document.getElementById("student-field-name").value = "";
+            document.getElementById("student-field-username").value = "";
+            document.getElementById("student-field-roll").value = "";
+            document.getElementById("student-field-dept").value = "Computer Engineering";
+            document.getElementById("student-field-email").value = "";
+            document.getElementById("student-modal").classList.remove("hidden");
+        }
+
+        function openEditStudentModal(id) {
+            const st = students.find(s => s.id === id);
+            if (!st) return;
+
+            document.getElementById("student-modal-title").textContent = "Edit Student Profile";
+            document.getElementById("student-modal-error").classList.add("hidden");
+            document.getElementById("student-form-id").value = st.id;
+            document.getElementById("student-field-name").value = st.name;
+            document.getElementById("student-field-username").value = st.username || "";
+            document.getElementById("student-field-roll").value = st.roll_no || st.roll || "";
+            document.getElementById("student-field-dept").value = st.department || st.dept || "Computer Engineering";
+            document.getElementById("student-field-email").value = st.email || "";
+            document.getElementById("student-modal").classList.remove("hidden");
+        }
+
+        function closeStudentModal() {
+            document.getElementById("student-modal").classList.add("hidden");
+        }
+
+        function handleSaveStudent(e) {
+            e.preventDefault();
+            const idVal = document.getElementById("student-form-id").value;
+            const isEdit = Boolean(idVal);
+            const errEl = document.getElementById("student-modal-error");
+
+            const name = document.getElementById("student-field-name").value.trim();
+            const username = document.getElementById("student-field-username").value.trim().toLowerCase();
+            const roll_no = document.getElementById("student-field-roll").value.trim().toUpperCase();
+            const department = document.getElementById("student-field-dept").value;
+            const email = document.getElementById("student-field-email").value.trim().toLowerCase();
+
+            if (!name || !username || !roll_no) {
+                errEl.textContent = "Please fill in all required fields.";
+                errEl.classList.remove("hidden");
+                return;
+            }
+
+            // Uniqueness check for username & roll_no
+            const existingUser = students.find(s => s.username === username && (!isEdit || s.id !== Number(idVal)));
+            if (existingUser) {
+                errEl.textContent = `A student with username '${username}' already exists.`;
+                errEl.classList.remove("hidden");
+                return;
+            }
+
+            const existingRoll = students.find(s => (s.roll_no || s.roll) === roll_no && (!isEdit || s.id !== Number(idVal)));
+            if (existingRoll) {
+                errEl.textContent = `A student with roll number '${roll_no}' already exists.`;
+                errEl.classList.remove("hidden");
+                return;
+            }
+
+            if (isEdit) {
+                const numId = Number(idVal);
+                const st = students.find(s => s.id === numId);
+                if (st) {
+                    st.name = name;
+                    st.username = username;
+                    st.roll_no = roll_no;
+                    st.department = department;
+                    st.email = email;
+                    showAlert(`Student '${name}' updated.`);
+                }
+            } else {
+                students.push({
+                    id: Date.now(),
+                    name,
+                    username,
+                    roll_no,
+                    department,
+                    email
+                });
+                showAlert(`Student '${name}' added to directory.`);
+            }
+
+            saveState();
+            closeStudentModal();
+            renderStudents();
+            renderOverview();
+        }
+
+        function adminDeleteStudent(id) {
+            const st = students.find(s => s.id === id);
+            if (!st) return;
+
+            const activeCount = registrations.filter(r => (r.username === st.username || r.user === st.name) && r.status === "registered").length;
+            if (activeCount > 0) {
+                if (!confirm(`Warning: ${st.name} has ${activeCount} active event pass(es). Deleting this student will also cancel their passes. Proceed?`)) {
+                    return;
+                }
+                // Cancel active registrations for this student
+                registrations.forEach(r => {
+                    if ((r.username === st.username || r.user === st.name) && r.status === "registered") {
+                        r.status = "cancelled";
+                    }
+                });
+            } else {
+                if (!confirm(`Delete student record for '${st.name}'?`)) return;
+            }
+
+            students = students.filter(s => s.id !== id);
+            saveState();
+            showAlert(`Student '${st.name}' deleted.`);
+            renderStudents();
+            renderOverview();
+            renderRegistrations();
+        }
+
+        // =================================================================
+        // REGISTRATIONS AUDIT TAB
+        // =================================================================
+        function populateEventFilterDropdown() {
+            const select = document.getElementById("reg-event-filter");
+            if (!select) return;
+            const currentVal = select.value;
+            select.innerHTML = `<option value="all">All Events (${events.length})</option>` +
+                events.map(e => `<option value="${e.id}">#${e.id} - ${escapeHtml(e.title)}</option>`).join("");
+            if ([...select.options].some(o => o.value === currentVal)) {
+                select.value = currentVal;
+            }
+        }
+
+        function resetRegFilters() {
+            const evFilter = document.getElementById("reg-event-filter");
+            const stFilter = document.getElementById("reg-status-filter");
+            const sInput = document.getElementById("reg-search-input");
+            if (evFilter) evFilter.value = "all";
+            if (stFilter) stFilter.value = "all";
+            if (sInput) sInput.value = "";
+            renderRegistrations();
+        }
+
+        function renderRegistrations() {
+            populateEventFilterDropdown();
+            const eventFilter = document.getElementById("reg-event-filter")?.value || "all";
+            const statusFilter = document.getElementById("reg-status-filter")?.value || "all";
+            const searchTerm = (document.getElementById("reg-search-input")?.value || "").trim().toLowerCase();
+
+            let filtered = registrations.slice();
+
+            if (eventFilter !== "all") {
+                filtered = filtered.filter(r => String(r.event_id) === String(eventFilter));
+            }
+
+            if (statusFilter !== "all") {
+                filtered = filtered.filter(r => r.status === statusFilter);
+            }
+
+            if (searchTerm) {
+                filtered = filtered.filter(r => {
+                    const ev = events.find(e => Number(e.id) === Number(r.event_id));
+                    const evTitle = ev ? ev.title.toLowerCase() : "";
+                    const uName = (r.user || "").toLowerCase();
+                    const uRoll = (r.roll_no || "").toLowerCase();
+                    const uDept = (r.department || "").toLowerCase();
+                    return uName.includes(searchTerm) || uRoll.includes(searchTerm) || evTitle.includes(searchTerm) || uDept.includes(searchTerm);
+                });
+            }
+
+            // Summary badge counts
+            const total = filtered.length;
+            const active = filtered.filter(r => r.status === "registered").length;
+            const cancelled = filtered.filter(r => r.status === "cancelled").length;
+            const summaryEl = document.getElementById("reg-summary-badge");
+            if (summaryEl) {
+                summaryEl.textContent = `Total: ${total} | Active: ${active} | Cancelled: ${cancelled}`;
+            }
+
+            const tbody = document.getElementById("admin-registrations-tbody");
+            const mobileContainer = document.getElementById("admin-registrations-mobile");
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="py-6 text-center text-xs text-[#718096] italic">No registrations match current filter criteria.</td></tr>`;
+                mobileContainer.innerHTML = `<div class="bg-white border border-[#E2E8F0] rounded-[6px] p-6 text-center text-xs text-[#718096] italic">No registrations found.</div>`;
+                return;
+            }
+
+            // Desktop Table
+            tbody.innerHTML = filtered.map(r => {
+                const ev = events.find(e => Number(e.id) === Number(r.event_id));
+                const evTitle = ev ? ev.title : `Event #${r.event_id}`;
+                const isReg = r.status === "registered";
+                return `
+                    <tr class="hover:bg-[#F7F8FA] transition-colors">
+                        <td class="py-3 px-4 font-mono text-xs text-[#718096] tabular-nums">#${r.id}</td>
+                        <td class="py-3 px-4 font-medium text-[#1A202C]">${escapeHtml(r.user)}</td>
+                        <td class="py-3 px-4 tabular-nums text-[#4A5568]">${escapeHtml(r.roll_no || "N/A")}</td>
+                        <td class="py-3 px-4 text-[#4A5568] text-xs">${escapeHtml(r.department || "General")}</td>
+                        <td class="py-3 px-4 font-medium text-[#1A202C] max-w-[200px] truncate">${escapeHtml(evTitle)}</td>
+                        <td class="py-3 px-4 tabular-nums text-xs text-[#718096] whitespace-nowrap">${escapeHtml(r.date || "—")}</td>
+                        <td class="py-3 px-4 text-center whitespace-nowrap">
+                            <span class="badge ${isReg ? 'badge-registered' : 'badge-cancelled'}">
+                                ${isReg ? 'Registered' : 'Cancelled'}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-right whitespace-nowrap">
+                            ${isReg ? `
+                                <button type="button" onclick="adminCancelRegistration(${r.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline p-1">
+                                    Cancel
+                                </button>
+                            ` : `<span class="text-xs text-[#A0AEC0]">—</span>`}
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+
+            // Mobile Cards
+            mobileContainer.innerHTML = filtered.map(r => {
+                const ev = events.find(e => Number(e.id) === Number(r.event_id));
+                const evTitle = ev ? ev.title : `Event #${r.event_id}`;
+                const isReg = r.status === "registered";
+                return `
+                    <div class="bg-white border border-[#E2E8F0] rounded-[6px] p-4 space-y-2 shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <div class="font-medium text-sm text-[#1A202C]">${escapeHtml(r.user)}</div>
+                                <div class="text-xs text-[#718096]">${escapeHtml(r.roll_no || "N/A")} &middot; ${escapeHtml(r.department || "General")}</div>
+                            </div>
+                            <span class="badge ${isReg ? 'badge-registered' : 'badge-cancelled'}">
+                                ${isReg ? 'Registered' : 'Cancelled'}
+                            </span>
+                        </div>
+                        <div class="pt-2 border-t border-[#EDF2F7] text-xs">
+                            <div class="font-semibold text-[#1F3A5F]">${escapeHtml(evTitle)}</div>
+                            <div class="text-[#718096] mt-0.5">Reg ID: #${r.id} &middot; Date: ${escapeHtml(r.date || "—")}</div>
+                        </div>
+                        ${isReg ? `
+                            <div class="pt-2 border-t border-[#EDF2F7] text-right">
+                                <button type="button" onclick="adminCancelRegistration(${r.id})" class="text-xs font-semibold text-[#9B1C1C] hover:underline">
+                                    Cancel Registration
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function adminCancelRegistration(regId) {
+            const reg = registrations.find(r => r.id === regId);
+            if (!reg) return;
+            if (reg.status === "cancelled") {
+                showAlert("This registration is already cancelled.", "error");
+                return;
+            }
+            if (!confirm(`Cancel registration #${reg.id} for ${reg.user}?`)) return;
+
+            reg.status = "cancelled";
+            saveState();
+            showAlert(`Registration #${reg.id} cancelled successfully.`);
+            renderRegistrations();
+            renderOverview();
+            renderEvents();
+            renderStudents();
+        }
+
+        // =================================================================
+        // INITIALIZATION
+        // =================================================================
         document.addEventListener("DOMContentLoaded", () => {
             const user = getCurrentUser();
             if (user) {
                 const nameEl = document.getElementById("user-display-name");
                 if (nameEl) nameEl.textContent = user.name || user.username;
+
+                const avatarEl = document.getElementById("user-avatar");
+                if (avatarEl) avatarEl.textContent = getInitials(user.name || user.username || "Admin");
             }
             loadState();
-            renderOverview();
-            renderEvents();
-            renderStudents();
+            switchTab("overview");
         });
     </script>
 </body>

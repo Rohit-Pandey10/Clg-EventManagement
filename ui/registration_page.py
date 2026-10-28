@@ -182,15 +182,22 @@ class RegistrationPage(ttk.Frame):
         options = ["All Events"]
 
         for ev in events:
-            label = f"{ev['title']} ({ev['event_date']})"
+            label = f"#{ev['event_id']} - {ev['title']} ({ev['event_date']})"
             self.events_map[label] = ev["event_id"]
             options.append(label)
 
+        current = self.event_filter_var.get()
         self.combo_events["values"] = options
-        self.combo_events.set("All Events")
+        if current in self.events_map:
+            self.combo_events.set(current)
+        else:
+            self.combo_events.set("All Events")
 
-    def load_registrations(self):
+    def load_registrations(self, refresh_events: bool = True):
         """Fetches and displays registrations according to current filters."""
+        if refresh_events:
+            self._populate_event_filter()
+
         for item in self.tree.get_children():
             self.tree.delete(item)
 

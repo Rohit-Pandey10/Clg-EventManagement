@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction, models
 from django.db.models import Count, Q
 from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.http import HttpResponseForbidden, JsonResponse
 from datetime import date
 
@@ -68,7 +69,11 @@ def login_view(request):
                 login(request, user)
                 messages.success(request, f"Welcome back, {user.full_name or user.username}!")
                 next_url = request.GET.get("next")
-                if next_url:
+                if next_url and url_has_allowed_host_and_scheme(
+                    next_url,
+                    allowed_hosts={request.get_host()},
+                    require_https=request.is_secure()
+                ):
                     return redirect(next_url)
                 return redirect("dashboard")
             else:
@@ -585,7 +590,11 @@ def cancel_registration(request, registration_id):
         messages.success(request, f"Registration cancelled for {reg.event.title}.")
 
     referer = request.META.get("HTTP_REFERER")
-    if referer:
+    if referer and url_has_allowed_host_and_scheme(
+        referer,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure()
+    ):
         return redirect(referer)
     if request.user.is_cems_admin:
         return redirect("registration_list")

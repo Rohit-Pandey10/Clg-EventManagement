@@ -17,13 +17,19 @@ class User(AbstractUser):
     email = models.EmailField(blank=True, null=True, unique=True)
 
     def save(self, *args, **kwargs):
-        if not self.full_name and (self.first_name or self.last_name):
-            self.full_name = f"{self.first_name} {self.last_name}".strip()
-        elif self.full_name and not self.first_name:
+        if not self.email or not str(self.email).strip():
+            self.email = None
+        else:
+            self.email = str(self.email).strip().lower()
+
+        if self.full_name:
+            self.full_name = self.full_name.strip()
             parts = self.full_name.split(maxsplit=1)
             self.first_name = parts[0]
-            if len(parts) > 1:
-                self.last_name = parts[1]
+            self.last_name = parts[1] if len(parts) > 1 else ""
+        elif self.first_name or self.last_name:
+            self.full_name = f"{self.first_name} {self.last_name}".strip()
+
         if self.is_superuser or self.is_staff:
             self.role = "admin"
         if self.roll_no:

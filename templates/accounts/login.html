@@ -84,7 +84,36 @@
                 </div>
             </form>
 
-            <div class="mt-6 pt-4 border-t border-[#E2E8F0] text-center text-sm text-[#4A5568]">
+            <div class="mt-6 pt-4 border-t border-[#EDF2F7] bg-[#F7F8FA] p-3 rounded-[4px] border border-[#E2E8F0] text-xs text-[#718096]">
+                <div class="font-semibold text-[#1A202C] mb-1.5 flex items-center justify-between">
+                    <span>Demo credentials:</span>
+                    <span class="text-[11px] font-normal text-[#718096]">(Click to fill)</span>
+                </div>
+                <div class="space-y-1 text-xs">
+                    <button type="button" onclick="fillCreds('admin', 'admin123')" class="w-full text-left py-1 px-1.5 hover:bg-[#EDF2F7] rounded-[3px] transition-colors flex items-center justify-between">
+                        <span><strong class="text-[#1F3A5F]">admin</strong> / admin123</span>
+                        <span class="text-[11px] font-medium text-[#4A5568] bg-white px-1.5 py-0.5 rounded border border-[#E2E8F0]">Admin</span>
+                    </button>
+                    <button type="button" onclick="fillCreds('alice', 'password123')" class="w-full text-left py-1 px-1.5 hover:bg-[#EDF2F7] rounded-[3px] transition-colors flex items-center justify-between">
+                        <span><strong class="text-[#1F3A5F]">alice</strong> / password123</span>
+                        <span class="text-[11px] font-medium text-[#4A5568] bg-white px-1.5 py-0.5 rounded border border-[#E2E8F0]">Student</span>
+                    </button>
+                    <button type="button" onclick="fillCreds('bob', 'password123')" class="w-full text-left py-1 px-1.5 hover:bg-[#EDF2F7] rounded-[3px] transition-colors flex items-center justify-between">
+                        <span><strong class="text-[#1F3A5F]">bob</strong> / password123</span>
+                        <span class="text-[11px] font-medium text-[#4A5568] bg-white px-1.5 py-0.5 rounded border border-[#E2E8F0]">Student</span>
+                    </button>
+                    <button type="button" onclick="fillCreds('charlie', 'password123')" class="w-full text-left py-1 px-1.5 hover:bg-[#EDF2F7] rounded-[3px] transition-colors flex items-center justify-between">
+                        <span><strong class="text-[#1F3A5F]">charlie</strong> / password123</span>
+                        <span class="text-[11px] font-medium text-[#4A5568] bg-white px-1.5 py-0.5 rounded border border-[#E2E8F0]">Student</span>
+                    </button>
+                    <button type="button" onclick="fillCreds('diana', 'password123')" class="w-full text-left py-1 px-1.5 hover:bg-[#EDF2F7] rounded-[3px] transition-colors flex items-center justify-between">
+                        <span><strong class="text-[#1F3A5F]">diana</strong> / password123</span>
+                        <span class="text-[11px] font-medium text-[#4A5568] bg-white px-1.5 py-0.5 rounded border border-[#E2E8F0]">Student</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-4 pt-3 text-center text-sm text-[#4A5568]">
                 <span>New student?</span>
                 <a href="{% url 'register' %}" class="text-[#1F3A5F] font-semibold hover:underline ml-1">
                     Create a student account
@@ -93,4 +122,28 @@
         </div>
     </div>
 </div>
+
+<script>
+    function fillCreds(u, p) {
+        var uInput = document.getElementById("{{ form.username.id_for_label }}");
+        var pInput = document.getElementById("{{ form.password.id_for_label }}");
+        if (uInput) uInput.value = u;
+        if (pInput) pInput.value = p;
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+        var toggleBtn = document.getElementById("toggle-password-btn");
+        var pInput = document.getElementById("{{ form.password.id_for_label }}");
+        if (toggleBtn && pInput) {
+            toggleBtn.addEventListener("click", function() {
+                if (pInput.type === "password") {
+                    pInput.type = "text";
+                    toggleBtn.textContent = "Hide";
+                } else {
+                    pInput.type = "password";
+                    toggleBtn.textContent = "Show";
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

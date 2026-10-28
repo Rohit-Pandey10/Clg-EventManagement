@@ -88,6 +88,20 @@ class EventForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         apply_widget_styles(self)
 
+    def clean_event_date(self):
+        event_date = self.cleaned_data.get("event_date")
+        if not event_date:
+            return event_date
+
+        today = timezone.localdate()
+        is_new = not self.instance or not self.instance.pk
+        date_changed = (not is_new) and (self.instance.event_date != event_date)
+
+        if (is_new or date_changed) and event_date < today:
+            raise ValidationError("Event date cannot be in the past.")
+
+        return event_date
+
     def clean_capacity(self):
         capacity = self.cleaned_data.get("capacity")
         if capacity is None or capacity <= 0:
